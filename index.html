@@ -1,0 +1,3373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DIRECTOR'S BOARD v2 — Storyboard → Video Gen</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0a0a0c;
+    --surface: #111116;
+    --surface2: #1a1a22;
+    --surface3: #22222d;
+    --border: #2a2a35;
+    --border-bright: #3a3a48;
+    --amber: #f5a623;
+    --amber-bright: #ffc046;
+    --amber-dim: #b87b18;
+    --red: #e84545;
+    --green: #3ddc84;
+    --cyan: #4ad7d7;
+    --purple: #a55cff;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --muted-bright: #8d8da3;
+    --panel-bg: #13131a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(245,166,35,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 100%, rgba(165,92,255,0.03) 0%, transparent 50%);
+  }
+
+  /* Header */
+  .header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--amber);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+  .header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 3px;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .header-version {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--bg);
+    background: var(--amber);
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .header-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .rec-dot {
+    width: 10px; height: 10px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse 1.4s infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .header-actions { display: flex; gap: 8px; }
+  .ico-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .ico-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* Main layout */
+  .main {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    height: calc(100vh - 60px);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 18px 16px 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-label {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  input, textarea, select {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 9px 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: vertical;
+    width: 100%;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--amber); }
+  select option { background: var(--surface); }
+  textarea { font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.5; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+  /* Image upload */
+  .upload-zone {
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .upload-zone:hover { border-color: var(--amber); background: rgba(245,166,35,0.04); }
+  .upload-zone.drag-over { border-color: var(--amber); background: rgba(245,166,35,0.08); }
+  .upload-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icon { font-size: 20px; margin-bottom: 4px; }
+  .upload-text { font-size: 12px; color: var(--muted); }
+  .upload-hint { font-size: 10px; color: var(--muted); margin-top: 4px; font-family: 'DM Mono', monospace; }
+
+  .thumb-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .thumb-wrap { position: relative; }
+  .thumb {
+    width: 56px; height: 56px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+  }
+  .thumb-role {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    background: var(--amber);
+    color: var(--bg);
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .thumb-role.style { background: var(--purple); color: white; }
+  .thumb-x {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 16px;
+    height: 16px;
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 10px;
+    line-height: 1;
+    display: none;
+  }
+  .thumb-wrap:hover .thumb-x { display: block; }
+  .thumb-toggle {
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
+    background: var(--surface3);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+  .thumb-toggle:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* Buttons */
+  .gen-btn {
+    background: var(--amber);
+    color: #0a0a0c;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .gen-btn:hover:not(:disabled) { background: var(--amber-bright); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,166,35,0.3); }
+  .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .refine-btn {
+    background: transparent;
+    color: var(--amber);
+    border: 1.5px solid var(--amber);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+  }
+  .refine-btn:hover:not(:disabled) { background: rgba(245,166,35,0.1); }
+  .refine-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: var(--border); color: var(--muted); }
+
+  .saveload-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .util-btn {
+    background: var(--surface2);
+    color: var(--muted-bright);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .util-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .util-btn input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  /* Output panel */
+  .output {
+    padding: 22px 28px 32px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* Storyboard grid */
+  .sb-grid-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .sb-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    padding: 0 2px;
+  }
+  .sb-meta-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: var(--text);
+  }
+  .sb-grid {
+    display: grid;
+    gap: 3px;
+    background: #000;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .sb-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .sb-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+  .sb-panel {
+    background: var(--panel-bg);
+    aspect-ratio: 16/10;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 9px 10px;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    overflow: hidden;
+  }
+  .sb-panel:hover { background: var(--surface2); }
+  .sb-panel.active { background: rgba(245,166,35,0.10); box-shadow: inset 0 0 0 2px var(--amber); }
+  .panel-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--amber);
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-num-fx {
+    color: var(--cyan);
+    font-size: 8px;
+  }
+  .panel-action {
+    font-size: 11px;
+    color: var(--text);
+    line-height: 1.35;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 12;
+    -webkit-box-orient: vertical;
+    transition: -webkit-line-clamp 0.2s;
+  }
+  .sb-panel:hover .panel-action {
+    -webkit-line-clamp: 30;
+    overflow-y: auto;
+  }
+  .panel-lyric {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--amber-dim);
+    border-top: 1px solid var(--border);
+    padding-top: 4px;
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .panel-cam {
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* Panel detail modal */
+  .panel-detail {
+    background: var(--surface);
+    border: 1px solid var(--amber);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .panel-detail-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: var(--amber);
+  }
+  .panel-detail-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 12px;
+    align-items: start;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .panel-detail-row .lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-top: 2px;
+  }
+  .panel-detail-row textarea {
+    background: var(--panel-bg);
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    min-height: 32px;
+  }
+  .panel-detail-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+  .panel-save-btn {
+    background: var(--amber);
+    color: var(--bg);
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+  .panel-cancel-btn {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+
+  /* Prompt cards */
+  .prompt-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .prompt-card:hover { border-color: var(--border-bright); }
+  .prompt-card-header {
+    padding: 11px 14px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .prompt-card-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--amber);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .step-badge {
+    background: var(--amber);
+    color: #000;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 1px;
+  }
+  .copy-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .copy-btn.copied { color: var(--green); border-color: var(--green); }
+  .prompt-body {
+    padding: 14px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11.5px;
+    line-height: 1.7;
+    color: #b8b8d0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  /* Versions timeline */
+  .versions-bar {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px 2px;
+    border-top: 1px dashed var(--border);
+    border-bottom: 1px dashed var(--border);
+  }
+  .version-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .version-chip:hover { border-color: var(--amber); color: var(--amber); }
+  .version-chip.current { background: var(--amber); color: var(--bg); border-color: var(--amber); }
+  .version-chip-meta { font-size: 8px; opacity: 0.7; margin-top: 2px; }
+
+  /* Empty state */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--muted);
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .empty-icon { font-size: 56px; opacity: 0.25; }
+  .empty-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 4px; color: var(--border-bright); }
+  .empty-sub { font-size: 13px; max-width: 360px; line-height: 1.6; }
+  .empty-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 16px;
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    letter-spacing: 1px;
+  }
+  kbd {
+    background: var(--surface2);
+    color: var(--amber);
+    padding: 1px 6px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+  }
+
+  /* Status bar */
+  .status-bar {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .status-bar.loading { color: var(--amber); border-color: var(--amber-dim); }
+  .status-bar.done { color: var(--green); border-color: #2a5c3f; }
+  .status-bar.error { color: var(--red); border-color: #5c2a2a; }
+  .status-bar.warn { color: var(--amber); border-color: var(--amber-dim); background: rgba(245,166,35,0.05); }
+  .spinner {
+    width: 12px; height: 12px;
+    border: 2px solid transparent;
+    border-top-color: var(--amber);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Feedback */
+  .feedback-area {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .feedback-label {
+    padding: 8px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .feedback-input {
+    background: transparent;
+    border: none;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    resize: none;
+    outline: none;
+    min-height: 70px;
+  }
+
+  /* Quick chips for tone, etc. */
+  .chip-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
+  .chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+  }
+  .chip:hover { border-color: var(--amber); color: var(--amber); }
+  .chip.active { background: var(--amber); color: var(--bg); border-color: var(--amber); }
+
+  /* Diagnostic panel */
+  .diag {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    letter-spacing: 1px;
+  }
+  .diag-item { display: flex; gap: 6px; }
+  .diag-item .v { color: var(--text); }
+  .diag-item .v.good { color: var(--green); }
+  .diag-item .v.warn { color: var(--amber); }
+
+  /* Export bar */
+  .export-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+  }
+  .export-btn {
+    background: var(--surface2);
+    color: var(--muted-bright);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 8px 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .export-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* Modal preview for image */
+  .img-preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    cursor: pointer;
+  }
+  .img-preview-overlay.show { display: flex; }
+  .img-preview-overlay img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 0 60px rgba(245,166,35,0.4);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--amber);
+    border-radius: 8px;
+    padding: 12px 18px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    z-index: 200;
+    transform: translateX(120%);
+    transition: transform 0.3s;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+  }
+  .toast.show { transform: translateX(0); }
+  .toast.error { border-color: var(--red); }
+  .toast.success { border-color: var(--green); }
+
+  /* ============ COMPOSITE PREVIEW (v2.4) ============ */
+  .cp-section {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .cp-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .cp-title {
+    font-size: 12px;
+    color: var(--amber);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+    font-weight: 700;
+  }
+  .cp-meta {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+  }
+  .cp-dropzone {
+    position: relative;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    min-height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    overflow: hidden;
+  }
+  .cp-dropzone:hover { border-color: var(--border-bright, var(--amber-dim)); }
+  .cp-dropzone.dragover { border-color: var(--amber); background: rgba(245,166,35,0.05); }
+  .cp-empty {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 36px 24px;
+    pointer-events: none;
+  }
+  .cp-empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.6; }
+  .cp-empty-text { font-size: 13px; color: var(--text); margin-bottom: 4px; font-family: 'DM Mono', monospace; }
+  .cp-empty-sub { font-size: 10px; opacity: 0.7; margin-bottom: 8px; }
+  .cp-empty-hint { font-size: 9px; opacity: 0.5; max-width: 400px; margin: 0 auto; line-height: 1.5; }
+  .cp-canvas {
+    position: relative;
+    width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #000;
+  }
+  .cp-canvas img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .cp-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .cp-cell {
+    position: absolute;
+    box-sizing: border-box;
+  }
+  .cp-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .cp-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .cp-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .cp-btn-primary { border-color: var(--amber); color: var(--amber); }
+  .cp-btn-primary:hover { background: var(--amber); color: #000; }
+  .cp-btn-warn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ===== Per-layout overlay label styles ===== */
+
+  /* Photoreal Cinematic — top-left number+caption badge */
+  .cp-cell .cp-label-photoreal {
+    position: absolute;
+    top: 6%;
+    left: 4%;
+    background: rgba(0,0,0,0.78);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: clamp(9px, 1.2vw, 13px);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    max-width: 88%;
+    line-height: 1.3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .cp-label-photoreal .pn { opacity: 0.7; margin-right: 6px; font-weight: 700; }
+
+  /* Lifestyle Editorial — bottom caption block (30% of cell height) */
+  .cp-cell .cp-label-editorial {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    background: rgba(255,255,255,0.96);
+    color: #1a1a1a;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: clamp(7px, 0.95vw, 11px);
+    line-height: 1.35;
+    overflow: hidden;
+    border-top: 2px solid #1a1a1a;
+  }
+  .cp-label-editorial .ed-row { display: block; margin-bottom: 2px; }
+  .cp-label-editorial .ed-label { font-weight: 700; letter-spacing: 0.8px; opacity: 0.85; }
+  .cp-label-editorial .ed-num {
+    position: absolute;
+    top: -28px;
+    left: 8px;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 3px 7px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  /* Comic Ink — speech bubble with serif italic */
+  .cp-cell .cp-label-comic {
+    position: absolute;
+    top: 8%;
+    left: 8%;
+    max-width: 70%;
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 12px;
+    padding: 6px 10px;
+    color: #000;
+    font-family: 'Comic Sans MS', 'Marker Felt', cursive;
+    font-size: clamp(9px, 1.1vw, 12px);
+    line-height: 1.25;
+    box-shadow: 2px 2px 0 #000;
+  }
+  .cp-label-comic .pn {
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 5px;
+    font-family: -apple-system, sans-serif;
+  }
+
+  /* Editorial header / footer banners (added above/below canvas in editorial mode) */
+  .cp-banner {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 10px 14px;
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cp-banner-top { border-radius: 6px 6px 0 0; }
+  .cp-banner-bot { border-radius: 0 0 6px 6px; font-size: 10px; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="rec-dot"></div>
+    <div>
+      <div class="header-title">DIRECTOR'S BOARD <span class="header-version">v2.9.1</span></div>
+      <div class="header-sub">Bake-in Directives · 4-Step Multi-Trip Workflow · Public · Blank Canvas · BYOK</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="ico-btn" id="settingsBtn" title="API settings">⚙</button>
+    <button class="ico-btn" id="diagBtn" title="Toggle diagnostics">📊</button>
+    <button class="ico-btn" id="resetBtn" title="Reset all">🗑</button>
+  </div>
+</div>
+
+<div class="main">
+  <!-- ============ SIDEBAR ============ -->
+  <div class="sidebar">
+
+    <div>
+      <div class="section-label">🎬 Concept</div>
+      <div class="form-group">
+        <div class="form-label">Idea / Brief</div>
+        <textarea id="concept" rows="4" placeholder="Describe the video. What happens? What's the vibe? Be specific or abstract — Claude fills the gaps."></textarea>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">🎭 Character</div>
+      <div class="form-group">
+        <div class="form-label">Description</div>
+        <textarea id="character" rows="5" placeholder="One character per line. Multi-character supported. Format: NAME: description.&#10;e.g.&#10;HERO: detective in worn trench coat, 40s, sharp eyes, weathered face&#10;PARTNER: rookie cop, 20s, crisp uniform, eager expression&#10;SUSPECT: cornered figure, hooded jacket, defiant stance"></textarea>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">🎚 Production</div>
+      <div class="row2">
+        <div class="form-group">
+          <div class="form-label">Tone</div>
+          <select id="tone">
+            <option>Playful / Upbeat</option>
+            <option>Epic / Cinematic</option>
+            <option>Dark / Moody</option>
+            <option>Dreamy / Surreal</option>
+            <option>Retro / Nostalgic</option>
+            <option>Chaotic / Frenetic</option>
+            <option>Minimal / Clean</option>
+            <option>Documentary / Grounded</option>
+            <option>Horror / Tense</option>
+            <option>Mystical / Esoteric</option>
+            <option>Suspenseful / Thriller</option>
+            <option>Melancholic / Bittersweet</option>
+            <option>Gritty / Noir</option>
+            <option>Aggressive / High-Energy</option>
+            <option>Inspirational / Heroic</option>
+            <option>Romantic / Tender</option>
+            <option>Comedic / Slapstick</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Duration (sec)</div>
+          <select id="duration">
+            <option>8</option>
+            <option>10</option>
+            <option selected>15</option>
+            <option>20</option>
+            <option>25</option>
+            <option>30</option>
+            <option>45</option>
+            <option>60</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2" style="margin-top:8px">
+        <div class="form-group">
+          <div class="form-label">Aspect Ratio</div>
+          <select id="aspect">
+            <option value="16:9">16:9 Widescreen</option>
+            <option value="9:16">9:16 Vertical (Shorts/Reels)</option>
+            <option value="1:1">1:1 Square (IG)</option>
+            <option value="21:9">21:9 Cinematic</option>
+            <option value="4:5">4:5 Portrait (IG)</option>
+            <option value="2.39:1">2.39:1 Anamorphic</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Panel Count</div>
+          <select id="panelCount">
+            <option value="6">6 panels (3×2)</option>
+            <option value="9" selected>9 panels (3×3)</option>
+            <option value="12">12 panels (4×3)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:8px">
+        <div class="form-label">Storyboard Layout</div>
+        <select id="layoutStyle">
+          <option value="comic_ink">🎨 Comic Ink (Koda-style B&amp;W storyboard)</option>
+          <option value="photoreal_cinematic">📷 Photoreal Cinematic (Alien-Walmart photo grid)</option>
+          <option value="lifestyle_editorial">📔 Lifestyle Editorial (Sol Vitals structured caption blocks)</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-top:8px">
+        <div class="form-label">Visual Style</div>
+        <select id="vstyle">
+          <option>Hyper-realistic Cinematic (8K)</option>
+          <option>Studio Ghibli Watercolor</option>
+          <option>Film Noir B&amp;W</option>
+          <option>Stylized 3D Animated</option>
+          <option>Anime / Manga</option>
+          <option>Watercolor / Painterly</option>
+          <option>Pixel Art</option>
+          <option>Live Action Cinematic</option>
+          <option>Flat 2D Cartoon</option>
+          <option>Dark Realism</option>
+          <option>Neon Cyberpunk</option>
+          <option>Vintage Film / Grain</option>
+          <option>Black &amp; White Comic Ink</option>
+          <option>Graphic Novel</option>
+          <option>Photoreal Documentary</option>
+          <option>Surreal / Dali-esque</option>
+          <option>Stop-Motion Claymation</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-top:8px">
+        <div class="form-label">Project Title</div>
+        <input id="title" type="text" placeholder="e.g. MY FIRST PROJECT, COFFEE COMMERCIAL, ROBOT ADVENTURE">
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">🖼️ Image Gen Tool</div>
+      <div class="form-group">
+        <div class="form-label">Image Generator</div>
+        <select id="imageTool">
+          <option value="grok_imagine">Grok Imagine (X.AI)</option>
+          <option value="chatgpt">ChatGPT / DALL-E / GPT-4o</option>
+          <option value="midjourney">Midjourney v7</option>
+          <option value="imagen">Imagen 4 (Google)</option>
+          <option value="flux">FLUX 1.1 Pro</option>
+          <option value="sdxl">Stable Diffusion XL / ComfyUI</option>
+          <option value="generic">Generic / Multi-tool</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">🎯 Target Tool</div>
+      <div class="form-group">
+        <div class="form-label">Video Generator</div>
+        <select id="targetTool">
+          <option value="generic">Generic / Multi-Model</option>
+          <option value="veo3">Google Veo 3 (native audio)</option>
+          <option value="veo2">Google Veo 2</option>
+          <option value="runway">Runway Gen-3 / Gen-4</option>
+          <option value="sora">OpenAI Sora</option>
+          <option value="kling">Kling 2.0</option>
+          <option value="wan22">Wan 2.2 I2V (ComfyUI)</option>
+          <option value="luma">Luma Dream Machine</option>
+          <option value="pika">Pika 2.0</option>
+          <option value="hailuo">Hailuo MiniMax</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">🎵 Audio</div>
+      <div class="form-group">
+        <div class="form-label">Song Lyrics (auto-IPA per panel)</div>
+        <textarea id="lyrics" rows="4" placeholder="Paste lyrics. Claude converts to IPA phonetic blocks synced to each panel beat."></textarea>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">🖼 Reference Images</div>
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text">Drop / paste / click — refs go to Claude's vision</div>
+        <div class="upload-hint">PNG · JPG · WEBP · multiple ok · click thumb to set role</div>
+        <input type="file" id="imgUpload" accept="image/*" multiple>
+      </div>
+      <div class="thumb-row" id="thumbRow"></div>
+    </div>
+
+    <div class="feedback-area" id="feedbackSection">
+      <div class="feedback-label">🔁 Refinement Feedback</div>
+      <textarea class="feedback-input" id="feedback" placeholder="Surgical changes. e.g. 'panel 5 should be overhead', 'more chaos in panels 7-8', 'change tone to dark'..."></textarea>
+    </div>
+
+    <button class="gen-btn" id="genBtn">
+      🎬 GENERATE STORYBOARD
+    </button>
+    <button class="refine-btn" id="refineBtn" disabled>
+      🔁 REFINE / ITERATE
+    </button>
+
+    <div class="saveload-row">
+      <button class="util-btn" id="saveBtn">💾 SAVE PROJECT</button>
+      <label class="util-btn">
+        📂 LOAD PROJECT
+        <input type="file" id="loadBtn" accept=".json">
+      </label>
+    </div>
+
+  </div>
+
+  <!-- ============ OUTPUT ============ -->
+  <div class="output" id="output">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🎬</div>
+      <div class="empty-title">READY TO SHOOT</div>
+      <div class="empty-sub">Fill the brief, drop reference images, paste lyrics. Hit Generate. Get a storyboard preview, character sheet prompt, IPA sync block, and target-tool video prompt — all copy-paste ready.</div>
+      <div class="empty-hint">
+        <kbd>⌘</kbd> + <kbd>Enter</kbd> generate &nbsp;·&nbsp; <kbd>⌘</kbd> + <kbd>R</kbd> refine &nbsp;·&nbsp; click any panel to edit
+      </div>
+    </div>
+
+    <!-- ============ COMPOSITE PREVIEW (v2.4 — relocated inside #output v2.4.2) ============ -->
+    <div class="cp-section" id="compositePreview">
+      <div class="cp-header">
+        <span class="cp-title">📺 Composite Preview · Step 3 Bake-in</span>
+        <span class="cp-meta">Drop your generated storyboard image, then click 📝 Generate Bake-in Prompt for the directives-overlay step</span>
+      </div>
+
+      <div class="cp-dropzone" id="cpDropzone" tabindex="0">
+        <div class="cp-empty" id="cpEmpty">
+          <div class="cp-empty-icon">📥</div>
+          <div class="cp-empty-text">Drag &amp; drop your generated image here</div>
+          <div class="cp-empty-sub">Or click to browse · paste from clipboard supported · PNG / JPG / WebP</div>
+          <div class="cp-empty-hint">First generate a storyboard above, then paste the storyboard prompt into your image gen tool, then drop the result here</div>
+        </div>
+        <div class="cp-canvas" id="cpCanvas" style="display:none">
+          <img id="cpImage" src="" alt="generated storyboard">
+          <div class="cp-overlay" id="cpOverlay"></div>
+        </div>
+        <input type="file" id="cpFileInput" accept="image/*" style="display:none">
+      </div>
+
+      <div class="cp-actions" id="cpActions" style="display:none">
+        <button class="cp-btn cp-btn-primary" id="cpBakeIn">📝 Generate Bake-in Prompt</button>
+        <button class="cp-btn" id="cpExportPNG">📷 Export PNG</button>
+        <button class="cp-btn" id="cpExportHTML">🌐 Export HTML</button>
+        <button class="cp-btn" id="cpExportPDF">📄 Export PDF</button>
+        <button class="cp-btn cp-btn-warn" id="cpClear">✕ Clear Image</button>
+      </div>
+
+      <!-- v2.9 — Bake-in directives prompt result section -->
+      <div class="cp-bakein-section" id="cpBakeinSection" style="display:none; margin-top:14px; background:var(--surface2); border:1px solid var(--amber-dim); border-radius:8px; padding:14px 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:2px; color:var(--amber);">📝 BAKE-IN DIRECTIVES PROMPT</div>
+          <div style="display:flex; gap:8px;">
+            <button class="cp-btn" id="cpBakeinCopy" style="font-size:11px; padding:4px 12px;">📋 Copy</button>
+            <button class="cp-btn cp-btn-warn" id="cpBakeinClose" style="font-size:11px; padding:4px 12px;">✕ Close</button>
+          </div>
+        </div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted-bright); margin-bottom:8px;">Paste this prompt + the storyboard image into your image gen tool. The tool will return your storyboard with SCENE/ACTION/VO directives baked into each panel.</div>
+        <textarea id="cpBakeinPrompt" readonly style="width:100%; min-height:300px; background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:4px; padding:12px; font-family:'DM Mono',monospace; font-size:11px; line-height:1.5; resize:vertical;"></textarea>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ SETTINGS MODAL ============ -->
+<style>
+  .sx-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 150; }
+  .sx-overlay.show { display: flex; }
+  .sx-panel { background: var(--surface); border: 1px solid var(--amber); border-radius: 10px; padding: 24px; width: 540px; max-width: 92vw; max-height: 88vh; overflow-y: auto; box-shadow: 0 0 80px rgba(245,166,35,0.3); }
+  .sx-title { font-family: 'DM Mono', monospace; font-size: 14px; color: var(--amber); letter-spacing: 1.5px; margin-bottom: 18px; text-transform: uppercase; }
+  .sx-section { margin-bottom: 18px; }
+  .sx-label { font-size: 11px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .sx-presets { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 4px; }
+  .sx-preset { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 11px; text-align: left; cursor: pointer; transition: all 0.15s; }
+  .sx-preset:hover { border-color: var(--amber); color: var(--amber); }
+  .sx-preset.active { border-color: var(--amber); color: var(--amber); background: rgba(245,166,35,0.08); }
+  .sx-preset .pname { font-weight: 700; display: block; margin-bottom: 2px; }
+  .sx-preset .pmeta { font-size: 10px; color: var(--text-dim); }
+  .sx-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 11px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 12px; box-sizing: border-box; }
+  .sx-input:focus { outline: none; border-color: var(--amber); }
+  .sx-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sx-row3 { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+  .sx-key-wrap { position: relative; }
+  .sx-key-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 4px; }
+  .sx-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .sx-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 18px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+  .sx-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .sx-btn.primary { background: var(--amber); color: #000; border-color: var(--amber); font-weight: 700; }
+  .sx-btn.primary:hover { background: #fff; border-color: #fff; }
+  .sx-status { font-family: 'DM Mono', monospace; font-size: 11px; padding: 8px 12px; border-radius: 5px; margin-top: 8px; min-height: 16px; }
+  .sx-status.ok { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid var(--green); }
+  .sx-status.err { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid var(--red); }
+  .sx-status.info { color: var(--text-dim); }
+  .sx-warn { background: rgba(245,166,35,0.08); border: 1px solid var(--amber); border-radius: 5px; padding: 9px 11px; font-size: 11px; color: var(--amber); margin-bottom: 12px; line-height: 1.5; }
+  .sx-checkbox-row { display: flex; align-items: center; gap: 8px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); cursor: pointer; }
+  .sx-checkbox-row input { cursor: pointer; }
+</style>
+<div class="sx-overlay" id="settingsModal">
+  <div class="sx-panel">
+    <div class="sx-title">⚙ API Backend Settings</div>
+
+    <div class="sx-warn" id="cors-warn" style="display:none">⚠ Browser CORS may block direct calls. If you hit a network error, serve this file via <code>python -m http.server</code> from the same machine that runs the API, or route through a CORS proxy you control.</div>
+
+    <div class="sx-section">
+      <div class="sx-label">Backend Preset</div>
+      <div class="sx-presets" id="sx-presets"></div>
+    </div>
+
+    <div class="sx-section">
+      <div class="sx-label">API Format</div>
+      <div class="sx-row">
+        <label class="sx-checkbox-row" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 11px;justify-content:center;cursor:pointer">
+          <input type="radio" name="sx-format" value="openai" id="sx-fmt-openai"> OpenAI-compatible
+        </label>
+        <label class="sx-checkbox-row" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 11px;justify-content:center;cursor:pointer">
+          <input type="radio" name="sx-format" value="anthropic" id="sx-fmt-anthropic"> Anthropic /v1/messages
+        </label>
+      </div>
+    </div>
+
+    <div class="sx-section">
+      <div class="sx-label">Endpoint URL</div>
+      <input type="text" class="sx-input" id="sx-endpoint" placeholder="https://api.minimax.io/v1/chat/completions">
+    </div>
+
+    <div class="sx-section">
+      <div class="sx-label">API Key <span style="color:var(--text-dim);text-transform:none;letter-spacing:0">(stored in browser localStorage)</span></div>
+      <div class="sx-key-wrap">
+        <input type="password" class="sx-input" id="sx-key" placeholder="sk-ant-... or your provider's API key" autocomplete="off">
+        <button class="sx-key-toggle" id="sx-key-show" type="button" title="Show / hide">👁</button>
+      </div>
+    </div>
+
+    <div class="sx-section">
+      <div class="sx-row">
+        <div>
+          <div class="sx-label">Model</div>
+          <input type="text" class="sx-input" id="sx-model" placeholder="claude-sonnet-4-5 / gpt-4o / claude-opus-4 / etc.">
+        </div>
+        <div>
+          <div class="sx-label">Max Tokens</div>
+          <input type="number" class="sx-input" id="sx-maxtok" value="6000" min="500" max="32000">
+        </div>
+      </div>
+    </div>
+
+    <div class="sx-section">
+      <label class="sx-checkbox-row">
+        <input type="checkbox" id="sx-skip-images"> Skip reference images (for text-only local models like Gemma without vision)
+      </label>
+    </div>
+
+    <div class="sx-status info" id="sx-status">Configure your backend, then click Test or Save & Close.</div>
+
+    <div class="sx-actions">
+      <button class="sx-btn" id="sx-test">Test Connection</button>
+      <button class="sx-btn primary" id="sx-save">Save & Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="img-preview-overlay" id="imgPreview"><img id="imgPreviewSrc" src="" alt=""></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================================
+// v2.8 — PUBLIC BLANK-CANVAS INIT
+// Every page load is a fresh start. No persistence. No prior session carryover.
+// ============================================================================
+(function blankCanvasWipe() {
+  try {
+    const KEY_PATTERNS = [/^storyboard/i, /^director/i, /^sb_/i, /^board_/i];
+    const toRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && KEY_PATTERNS.some(re => re.test(k))) toRemove.push(k);
+    }
+    toRemove.forEach(k => localStorage.removeItem(k));
+    if (typeof sessionStorage !== 'undefined') {
+      const sToRemove = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const k = sessionStorage.key(i);
+        if (k && KEY_PATTERNS.some(re => re.test(k))) sToRemove.push(k);
+      }
+      sToRemove.forEach(k => sessionStorage.removeItem(k));
+    }
+  } catch (e) { /* storage blocked — fine, nothing to wipe */ }
+})();
+
+// Reset form fields to factory defaults after DOM loads, overriding browser autofill
+window.addEventListener('DOMContentLoaded', function blankCanvasFormReset() {
+  const RESET = {
+    concept: '', character: '', lyrics: '', title: '', feedback: '',
+    tone: 'Playful / Upbeat', duration: '15', aspect: '16:9',
+    panelCount: '9', layoutStyle: 'comic_ink',
+    vstyle: 'Hyper-realistic Cinematic (8K)',
+    imageTool: 'grok_imagine', targetTool: 'generic',
+  };
+  Object.entries(RESET).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) { el.value = val; }
+  });
+});
+
+// ============================================================================
+// STATE
+// ============================================================================
+const state = {
+  uploadedImages: [],   // { id, name, dataUrl, base64, mediaType, role: 'style'|'char1'|'char2'|'char3' }
+  conversationHistory: [],
+  versions: [],         // { id, label, ts, sections, panels, raw, inputs }
+  currentVersion: null,
+  hasGenerated: false,
+  diagnostics: { lastTokens: 0, lastTime: 0, model: '' },
+  showDiag: false,
+  activePanelIdx: -1,
+};
+
+// ============================================================================
+// API BACKEND CONFIG (v2.2)
+// ============================================================================
+// v2.8 — Public-grade preset list. LAN-only / personal endpoints removed.
+// Memory-aware backends (e.g. broker proxies that inject user profile context) leak personal data into outputs and CANNOT be public defaults.
+const API_PRESETS = {
+  anthropic: {
+    name: '🟠 Anthropic Direct',
+    meta: 'cloud · stateless · vision OK',
+    format: 'anthropic',
+    endpoint: 'https://api.anthropic.com/v1/messages',
+    model: 'claude-sonnet-4-5',
+    note: 'Direct to Anthropic. Stateless (no memory leak). Get key from console.anthropic.com.',
+  },
+  openrouter: {
+    name: '🔵 OpenRouter',
+    meta: 'cloud · multi-model · stateless',
+    format: 'openai',
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+    model: 'anthropic/claude-sonnet-4',
+    note: 'Get key from openrouter.ai. Try claude-sonnet-4, gpt-4o, gemini-2.5-pro, many more.',
+  },
+  minimax: {
+    name: '🟣 MiniMax M2.7',
+    meta: 'cloud · OpenAI-format · vision OK',
+    format: 'openai',
+    endpoint: 'https://api.minimax.io/v1/chat/completions',
+    model: 'MiniMax-M2',
+    note: 'Get key from minimax.io. Browser CORS may need a proxy.',
+  },
+  custom: {
+    name: '⚫ Custom',
+    meta: 'manual config',
+    format: 'openai',
+    endpoint: '',
+    model: '',
+    note: 'Roll your own — local LLMs, Together AI, fal, proxies, etc. Stateless endpoints only.',
+  },
+};
+
+const apiConfig = {
+  preset: 'anthropic',
+  format: 'anthropic',
+  endpoint: '',
+  key: '',
+  model: '',
+  maxTokens: 6000,
+  skipImages: false,
+};
+
+const API_STORAGE_KEY = 'storyboard_api_config_v22';
+
+function loadApiConfig() {
+  try {
+    const raw = localStorage.getItem(API_STORAGE_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    Object.assign(apiConfig, saved);
+    return true;
+  } catch { return false; }
+}
+
+function saveApiConfig() {
+  try { localStorage.setItem(API_STORAGE_KEY, JSON.stringify(apiConfig)); } catch {}
+}
+
+const LAYOUT_PRESETS = {
+  comic_ink: `LAYOUT MODE: COMIC INK STORYBOARD — CLEAN ART ONLY (text labels added via browser overlay).
+- Hand-drawn black-and-white ink storyboard with bold strokes, hatching, motion lines.
+- Each panel renders ONLY the action scene as comic ink illustration with the named character drawn consistently. DO NOT bake in caption text, lyrics, dialog, scene titles, director notes, or banners — the browser overlay handles ALL text.
+- Use motion lines, speed lines, music notes, hearts, sweat drops, impact stars as visual FX where appropriate.
+- The ONLY text in the image: a small numbered badge in top-left of each panel, just the digit ("1" through "N") in a small circle.
+- Comic-book panel grid with thin black gutters between cells.
+- POSITIONAL ANCHORING (CRITICAL — image gens scramble grids without this): panels arranged strict left-to-right, top-to-bottom. For 9 panels (3×3): 1=top-left, 2=top-center, 3=top-right, 4=middle-left, 5=middle-center, 6=middle-right, 7=bottom-left, 8=bottom-center, 9=bottom-right. For 6 panels (3×2) and 12 panels (4×3): same convention.`,
+
+  photoreal_cinematic: `LAYOUT MODE: PHOTOREAL CINEMATIC GRID — CLEAN PHOTOS ONLY (text labels added via browser overlay).
+- Photorealistic cinematic frames, consistent lighting and lens treatment across all panels.
+- Each panel renders ONLY the action scene as a complete cinematic still — dramatic composition, real-world lighting, depth of field. DO NOT bake in scene captions, action text, dialog, or banners; the browser overlay handles ALL text.
+- The named character(s) must appear consistently across panels — same face, same wardrobe, same proportions.
+- The ONLY text in the image: panel number "01" through "N" in TOP-LEFT corner with subtle dark translucent bar, clean sans-serif white text. Maximum 2 characters of text per panel — no captions.
+- Thin dark gutters between panels.
+- POSITIONAL ANCHORING (CRITICAL): panels arranged strict left-to-right, top-to-bottom. For 9 panels (3×3): 01=top-left, 02=top-center, 03=top-right, 04=middle-left, 05=middle-center, 06=middle-right, 07=bottom-left, 08=bottom-center, 09=bottom-right. For 6 panels (3×2) and 12 panels (4×3): same convention.`,
+
+  lifestyle_editorial: `LAYOUT MODE: LIFESTYLE EDITORIAL STORYBOARD — CLEAN PHOTOS ONLY (caption blocks rendered via browser overlay).
+- Color lifestyle photography grade, magazine-quality composition, natural light or controlled studio.
+- Each panel renders ONLY the photo scene — calm, polished, brand-deck aesthetic. DO NOT bake in SCENE/ACTION+VO/VO caption blocks, header banner, footer banner, or product info; the browser overlay handles ALL text and structured labels.
+- The ONLY text in the image: panel number "01" through "N" in TOP-LEFT corner of photo, small white sans-serif on subtle dark bar. Maximum 2 characters per panel.
+- Grid layout with thin gutters. Generous whitespace within panels.
+- POSITIONAL ANCHORING (CRITICAL): panels arranged strict left-to-right, top-to-bottom. For 9 panels (3×3): 01=top-left, 02=top-center, 03=top-right, 04=middle-left, 05=middle-center, 06=middle-right, 07=bottom-left, 08=bottom-center, 09=bottom-right.`,
+};
+
+const IMAGE_TOOL_PRESETS = {
+  grok_imagine: `IMAGE GEN TARGET: Grok Imagine (X.AI). The characterSheet and storyboard.fullPrompt MUST be formatted for Grok Imagine: descriptive natural language. Character lock is MODERATE — Grok ignores reference cues unless explicitly told to use them. EVERY character sheet prompt and storyboard prompt MUST OPEN with a USER ACTION REQUIRED block formatted like this:
+
+"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open Grok Imagine.
+2. ATTACH your reference photo of [CHARACTER_NAME] using the image upload button (paperclip icon).
+3. Then paste the prompt below INTO the chat with the photo attached.
+4. The first line of the prompt below tells Grok to use your photo as facial reference — DO NOT delete it.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROMPT:
+Use the attached reference photo as the strict facial, hair, and physical-build reference for this character. Match every distinctive feature visible in that photo — face shape, eye spacing, eyebrow shape, nose, lip shape, jawline, skin tone, hair color/texture/length, and build. [rest of sheet/storyboard prompt follows here...]"
+
+For storyboard.fullPrompt with multiple characters, instruct user to attach ALL character reference photos AND their generated character sheets, in a numbered list. Aspect ratio handled in UI not prompt flags. Use distinctive feature lock at maximum verbosity (face shape, hair color, exact clothing, distinctive marks, age estimate, build).`,
+
+  chatgpt: `IMAGE GEN TARGET: ChatGPT / DALL-E / GPT-4o image. THIS IS THE BEST PROMPT-ONLY TOOL FOR HUMAN FACE LOCK — recommend it strongly when the brief contains human characters. Descriptive natural language only — NO flags or @ syntax. EVERY characterSheet and storyboard.fullPrompt MUST OPEN with this USER ACTION REQUIRED block:
+
+"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open ChatGPT (GPT-4o or higher with image generation).
+2. Click the 📎 attachment button.
+3. UPLOAD your reference photo of [CHARACTER_NAME] (and for storyboards: upload all character sheets AND any location/wardrobe references).
+4. Then paste the prompt below in the same message as the attached image.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROMPT:
+Use the attached reference image(s) as the EXACT visual reference. Match the face, hair, clothing, and proportions of every character precisely as shown in the attached photo(s) — same person, not a similar-looking person. [rest of sheet/storyboard prompt follows here...]"
+
+Aspect ratio: handled by selecting square / wide / tall in ChatGPT UI.`,
+
+  midjourney: `IMAGE GEN TARGET: Midjourney v7. STRONG TOOL FOR FACE LOCK — recommend when brief contains human characters. v7 syntax with flags. EVERY characterSheet and storyboard.fullPrompt MUST OPEN with this USER ACTION REQUIRED block:
+
+"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Upload your reference photo of [CHARACTER_NAME] to Discord (drag into a Midjourney channel) and right-click → 'Copy Image Address' to get the URL.
+2. In the prompt below, REPLACE the placeholder [REF_URL_FOR_CHARACTER_NAME] with that URL.
+3. Then paste the modified prompt to Midjourney.
+4. The --cref flag locks the character to your photo. --cw 100 = max lock strength.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROMPT:
+[REF_URL_FOR_CHARACTER_NAME] [rest of prompt body...] --ar [ratio] --cref [REF_URL_FOR_CHARACTER_NAME] --cw 100 --style raw"
+
+For storyboards with multiple characters, build a multi-cref list: --cref [URL1] [URL2] [URL3] --cw 100. Use --no for negative prompts.`,
+
+  imagen: `IMAGE GEN TARGET: Imagen 4 (Google Vertex AI / Gemini). Descriptive natural language. Reference images attach via the SDK reference field, NOT inline. EVERY characterSheet and storyboard.fullPrompt MUST OPEN with this USER ACTION REQUIRED block:
+
+"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open Imagen 4 (via Gemini app or Vertex AI Studio).
+2. Locate the 'Reference Image' input field (separate from the prompt textbox).
+3. UPLOAD your reference photo of [CHARACTER_NAME] there.
+4. Then paste the prompt below into the prompt textbox.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROMPT:
+Use the reference image provided as the strict facial and physical reference for this character. [rest of prompt body...]"
+
+Strong character lock when reference field used.`,
+
+  flux: `IMAGE GEN TARGET: FLUX 1.1 Pro (BlackForestLabs / fal.ai). FLUX format: positive prompt followed by NEGATIVE section. EVERY characterSheet and storyboard.fullPrompt MUST OPEN with this USER ACTION REQUIRED block:
+
+"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open fal.ai (or your FLUX endpoint with IP-Adapter support).
+2. Enable IP-Adapter in advanced options.
+3. UPLOAD your reference photo of [CHARACTER_NAME] as the IP-Adapter image.
+4. Set IP-Adapter weight to 0.8.
+5. Then paste the prompt below.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+POSITIVE PROMPT:
+[prompt body using IP-Adapter reference for character lock...]
+
+NEGATIVE: blurry, low quality, deformed, extra limbs, mutated, watermark, signature, text, [other unwanted].
+
+[IP-Adapter: attach reference photo, weight=0.8]"`,
+
+  sdxl: `IMAGE GEN TARGET: Stable Diffusion XL via Automatic1111 / ComfyUI / Forge. SD format: comma-separated tags with weighted emphasis. EVERY characterSheet and storyboard.fullPrompt MUST OPEN with this USER ACTION REQUIRED block:
+
+"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open A1111 / ComfyUI / Forge.
+2. Enable IP-Adapter (FaceID for human characters; standard IP-Adapter for non-human).
+3. UPLOAD your reference photo of [CHARACTER_NAME] as the IP-Adapter input image.
+4. Set IP-Adapter weight to 0.8.
+5. Recommended: 30 steps, CFG 7, Euler a sampler, 1024x1024 base resolution.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+POSITIVE PROMPT:
+(masterpiece:1.2), (best quality:1.1), [comma-separated tags with weighted emphasis...]
+
+NEGATIVE PROMPT: blurry, low quality, deformed, extra limbs, mutated, watermark, signature, text, [other unwanted]."`,
+
+  generic: `IMAGE GEN TARGET: Generic / Multi-tool. Tool-agnostic descriptive natural language. No tool-specific flags. EVERY characterSheet and storyboard.fullPrompt MUST OPEN with this USER ACTION REQUIRED block:
+
+"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open your image generation tool of choice (ChatGPT GPT-4o, Midjourney, Imagen, Grok Imagine, FLUX, SDXL, etc.).
+2. ATTACH or UPLOAD your reference photo of [CHARACTER_NAME] using whatever image input the tool provides (file upload, URL paste, IP-Adapter, --cref, etc.).
+3. Set character reference weight to MAXIMUM if your tool exposes that control.
+4. Then paste the prompt below.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROMPT:
+Use the attached reference image as strict visual reference for this character. Match face, hair, clothing, build precisely. [rest of prompt body...]"`,
+};
+
+const TOOL_PRESETS = {
+  generic: 'Multi-model compatible. Use universal directing language; describe shots, motion, mood plainly. No tool-specific syntax.',
+  veo3: 'Optimize for Google Veo 3. LEVERAGE NATIVE AUDIO: include diegetic sound cues per panel (footsteps, ambient, sfx). 8-second-beat structure. Strong subject-action-environment phrasing. Lock framing per shot.',
+  veo2: 'Optimize for Google Veo 2. Cinematic camera language (dolly, push-in, crane). Concrete subjects with strong verbs. Avoid abstract directives.',
+  runway: 'Optimize for Runway Gen-3 / Gen-4. Use motion brush vocabulary (subject motion, camera motion, intensity). Structured camera moves. Keep prompts under 200 words per shot.',
+  sora: 'Optimize for OpenAI Sora. Cinematic, narrative language. Longer continuous shots welcomed. Specify lens (35mm, anamorphic), film stock vibe, lighting setup.',
+  kling: 'Optimize for Kling 2.0. Use motion intensity descriptors (subtle, moderate, intense). Strong on dynamic action. Keep one main subject per shot.',
+  wan22: 'Optimize for Wan 2.2 I2V via ComfyUI. KEYFRAME-DRIVEN: each panel is a keyframe reference, video model interpolates motion. Specify start/end pose clearly per panel.',
+  luma: 'Optimize for Luma Dream Machine. Strong on dreamy/surreal motion. Use poetic but visual language.',
+  pika: 'Optimize for Pika 2.0. Concise prompts. Use Pikaffect-style transformation language where applicable.',
+  hailuo: 'Optimize for Hailuo MiniMax. Strong character consistency. Specific camera + motion prompting.',
+};
+
+const ASPECT_DIMS = {
+  '16:9': { w: 1920, h: 1080 },
+  '9:16': { w: 1080, h: 1920 },
+  '1:1':  { w: 1080, h: 1080 },
+  '21:9': { w: 2560, h: 1080 },
+  '4:5':  { w: 1080, h: 1350 },
+  '2.39:1': { w: 2580, h: 1080 },
+};
+
+// ============================================================================
+// UTILITIES
+// ============================================================================
+function $(id) { return document.getElementById(id); }
+function escapeHtml(t) { return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function fmtTs(ts) {
+  const d = new Date(ts);
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+function toast(msg, type='') {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = 'COPIED ✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+    }
+    toast('Copied to clipboard', 'success');
+  }).catch(() => toast('Copy failed', 'error'));
+}
+
+function downloadBlob(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function setStatus(msg, type='') {
+  const out = $('output');
+  let bar = $('statusBar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'statusBar';
+    out.insertBefore(bar, out.firstChild);
+  }
+  bar.className = 'status-bar ' + type;
+  bar.innerHTML = type === 'loading'
+    ? `<div class="spinner"></div>${msg}`
+    : (type === 'done' ? '✅ ' : type === 'error' ? '❌ ' : type === 'warn' ? '⚠️ ' : '') + msg;
+}
+
+// ============================================================================
+// IMAGE HANDLING
+// ============================================================================
+function handleFiles(files) {
+  const list = Array.from(files).filter(f => f.type.startsWith('image/'));
+  list.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const dataUrl = ev.target.result;
+      const base64 = dataUrl.split(',')[1];
+      const mediaType = file.type;
+      const charCount = state.uploadedImages.filter(i => i.role && i.role.startsWith('char')).length;
+      const obj = {
+        id: uid(),
+        name: file.name,
+        dataUrl, base64, mediaType,
+        role: charCount < 3 ? `char${charCount + 1}` : 'style',
+      };
+      state.uploadedImages.push(obj);
+      renderThumbs();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderThumbs() {
+  const row = $('thumbRow');
+  row.innerHTML = '';
+  const roleLabel = r => r === 'style' ? 'STYLE' : r === 'char1' ? 'CHAR1' : r === 'char2' ? 'CHAR2' : r === 'char3' ? 'CHAR3' : r.toUpperCase();
+  state.uploadedImages.forEach(img => {
+    const wrap = document.createElement('div');
+    wrap.className = 'thumb-wrap';
+    wrap.innerHTML = `
+      <div class="thumb-role ${img.role==='style' ? 'style' : ''}">${roleLabel(img.role)}</div>
+      <img src="${img.dataUrl}" class="thumb" alt="${escapeHtml(img.name)}" data-id="${img.id}">
+      <button class="thumb-x" data-rm="${img.id}">×</button>
+      <button class="thumb-toggle" data-tg="${img.id}" title="Click to cycle role">${roleLabel(img.role)}</button>
+    `;
+    row.appendChild(wrap);
+  });
+  row.querySelectorAll('[data-rm]').forEach(b => b.onclick = (e) => {
+    e.stopPropagation();
+    state.uploadedImages = state.uploadedImages.filter(i => i.id !== b.dataset.rm);
+    renderThumbs();
+  });
+  row.querySelectorAll('[data-tg]').forEach(b => b.onclick = (e) => {
+    e.stopPropagation();
+    const img = state.uploadedImages.find(i => i.id === b.dataset.tg);
+    if (!img) return;
+    const cycle = { 'style': 'char1', 'char1': 'char2', 'char2': 'char3', 'char3': 'style', 'character': 'char1' };
+    const oldRole = img.role;
+    const newRole = cycle[img.role] || 'style';
+    // Swap-on-conflict: if newRole is already held by a DIFFERENT image, give that image the oldRole
+    if (newRole !== 'style') {
+      const conflict = state.uploadedImages.find(i => i.id !== img.id && i.role === newRole);
+      if (conflict) conflict.role = oldRole;
+    }
+    img.role = newRole;
+    renderThumbs();
+    if (typeof renderComposite === 'function') renderComposite();
+  });
+  row.querySelectorAll('.thumb').forEach(t => t.onclick = () => {
+    $('imgPreviewSrc').src = t.src;
+    $('imgPreview').classList.add('show');
+  });
+}
+
+$('imgPreview').onclick = () => $('imgPreview').classList.remove('show');
+
+// Upload events
+$('imgUpload').addEventListener('change', e => handleFiles(e.target.files));
+$('layoutStyle')?.addEventListener('change', () => { if (typeof renderComposite === 'function') renderComposite(); });
+
+const uz = $('uploadZone');
+['dragenter','dragover'].forEach(ev => uz.addEventListener(ev, e => {
+  e.preventDefault(); uz.classList.add('drag-over');
+}));
+['dragleave','drop'].forEach(ev => uz.addEventListener(ev, e => {
+  e.preventDefault(); uz.classList.remove('drag-over');
+}));
+uz.addEventListener('drop', e => {
+  e.preventDefault();
+  if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+});
+
+// Paste from clipboard
+document.addEventListener('paste', e => {
+  const items = e.clipboardData?.items || [];
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      const file = item.getAsFile();
+      if (file) handleFiles([file]);
+    }
+  }
+});
+
+// ============================================================================
+// INPUTS
+// ============================================================================
+function getInputs() {
+  return {
+    concept: $('concept').value.trim(),
+    character: $('character').value.trim(),
+    layoutStyle: $('layoutStyle')?.value || 'comic_ink',
+    tone: $('tone').value,
+    duration: parseInt($('duration').value),
+    aspect: $('aspect').value,
+    panelCount: parseInt($('panelCount').value),
+    vstyle: $('vstyle').value,
+    title: $('title').value.trim() || 'UNTITLED',
+    targetTool: $('targetTool').value,
+    imageTool: $('imageTool')?.value || 'generic',
+    lyrics: $('lyrics').value.trim(),
+    feedback: $('feedback').value.trim(),
+  };
+}
+
+function setInputs(inputs) {
+  if (!inputs) return;
+  $('concept').value = inputs.concept || '';
+  $('character').value = inputs.character || '';
+  if ($('layoutStyle') && inputs.layoutStyle) {
+    $('layoutStyle').value = inputs.layoutStyle;
+    if (typeof renderComposite === 'function') renderComposite();
+  }
+  $('tone').value = inputs.tone || 'Playful / Upbeat';
+  $('duration').value = inputs.duration || 15;
+  $('aspect').value = inputs.aspect || '16:9';
+  $('panelCount').value = inputs.panelCount || 9;
+  $('vstyle').value = inputs.vstyle || 'Stylized 3D Animated';
+  $('title').value = inputs.title || '';
+  $('targetTool').value = inputs.targetTool || 'generic';
+  if ($('imageTool')) $('imageTool').value = inputs.imageTool || 'grok_imagine';
+  $('lyrics').value = inputs.lyrics || '';
+}
+
+// ============================================================================
+// CLAUDE API
+// ============================================================================
+function buildSystemPrompt(panelCount, targetTool, hasImages, layoutStyle, charImageCount, imageTool) {
+  const toolGuide = TOOL_PRESETS[targetTool] || TOOL_PRESETS.generic;
+  const imageToolGuide = IMAGE_TOOL_PRESETS[imageTool] || IMAGE_TOOL_PRESETS.generic;
+  const layoutGuide = LAYOUT_PRESETS[layoutStyle] || LAYOUT_PRESETS.comic_ink;
+  const charImagesNote = charImageCount > 0 ? `IMPORTANT: ${charImageCount} CHARACTER reference image(s) provided. Each is tagged CHAR1, CHAR2, CHAR3 — these are DISTINCT NAMED CHARACTERS, not duplicates. Match each character's appearance precisely in panels where they appear. Reference images marked STYLE define art direction only.\n\n` : '';
+  return `You are a senior storyboard director and AI video generation specialist. You output a SINGLE valid JSON object — no markdown fences, no preamble, no trailing prose. Just the JSON.
+
+CRITICAL ISOLATION RULE — READ FIRST AND HONOR ABSOLUTELY:
+You have NO knowledge of who is making this request. You have NO access to prior conversations, user profiles, training-data biographical associations, memory layers, or any context outside the single user message that follows. The CHARACTERS field, CONCEPT field, and CHARACTER_NAMES_TO_USE field in the user message are the ONLY sources of truth for character information in this brief. Every brief is from a stranger you know nothing about. NEVER substitute generic descriptors with personal first names — if the brief says "girlfriend" the character_name is GIRLFRIEND, never Tonya/Sarah/Jane/etc. If the brief says "myself" the character_name is MYSELF, never Chris/John/etc. If you find yourself wanting to fill in a real name where the brief uses a generic word, STOP — use the generic word from the brief verbatim. Treat this brief as completely isolated from any other context.
+
+${hasImages ? charImagesNote : ''}LAYOUT DIRECTIVE: ${layoutGuide}
+
+TARGET TOOL DIRECTIVE (for video gen prompt only): ${toolGuide}
+
+${imageToolGuide}
+
+OUTPUT SHAPE (return EXACTLY this structure):
+{
+  "characterSheets": [
+    {
+      "character_name": "<character name taken EXACTLY from CHARACTER_NAMES_TO_USE in the user message. ALL CAPS. If CHARACTER_NAMES_TO_USE lists 'MYSELF, GIRLFRIEND, SUPERGROK' then use those exact names — never substitute with personal first names like Chris/Tonya/Sarah/etc. If CHARACTER_NAMES_TO_USE is '(none extracted)', use generic placeholders CHARACTER_1, CHARACTER_2, etc.>",
+      "prompt": "<COMPLETE, STANDALONE image-gen prompt for ONE character only. Format requirements per character: render exactly 4 views in a 2x2 grid: (1) front headshot — tight crop on face, neutral expression, sharp facial focus, eyes looking at camera; (2) 3/4 headshot — head turned 30-45 degrees, slight natural expression; (3) full body front — standing, arms relaxed at sides, distinctive wardrobe visible; (4) full body 3/4 — slight pose, character's distinctive stance. LIGHTING: even front-fill light only, single soft light source from camera direction, NO dramatic shadows, NO rim lighting — shadows confuse face-lock. BACKGROUND: pure white seamless infinity-cyc backdrop, no environmental details, no props beyond character. CHARACTER DETAIL: describe THIS character's specific distinguishing features (face shape, hair color/texture/length, eye color and shape, eyebrow shape, nose, lips, jawline, skin tone, build, age estimate, distinctive marks, exact wardrobe). Per the SUBJECT-AGNOSTIC CHARACTER HANDLING rule for non-humans. THE PROMPT MUST OPEN with the tool-specific USER ACTION REQUIRED block from the IMAGE GEN TOOL DIRECTIVE — replace [CHARACTER_NAME] with this character's actual name. THE PROMPT MUST END with: 'Pure white seamless background. Sharp facial focus. Even front lighting. NO text, NO labels, NO captions, NO annotations of any kind in the image — character figure only.'>"
+    }
+    /* GENERATE ONE ENTRY PER DISTINCT CHARACTER NAMED IN THE BRIEF.
+       For multi-character projects (e.g. MYSELF + GIRLFRIEND + ROBOT), output 3 entries.
+       NEVER combine multiple characters into a single prompt — Grok Imagine and similar tools fail on multi-character sheets, generating 4 different versions of "the same" character. ONE CHARACTER PER PROMPT, USER RUNS THEM SEPARATELY. */
+  ],
+  "storyboard": {
+    "fullPrompt": "<full image-gen prompt for a SINGLE composite storyboard image with CLEAN PHOTOS ONLY in a ${panelCount}-panel grid. Per the LAYOUT DIRECTIVE above: each panel renders ONLY the action scene with the named characters and the rendering style — DO NOT instruct the image generator to render scene captions, action text, lyrics, dialog, VO, header/footer banners, or any prose labels inside the image. Those are added by a browser overlay layer downstream. The ONLY text label per panel is the small panel number badge in top-left corner. The prompt MUST specify: (1) explicit grid layout with thin gutters, (2) STRICT POSITIONAL ANCHORING for every panel (e.g. '01 top-left, 02 top-center, 03 top-right...') because image generators scramble grids without this, (3) the named characters with consistent appearance, (4) the visual rendering style. Keep under 220 words. End with the positional anchoring as a final reminder.>",
+    "panels": [
+      {
+        "num": 1,
+        "action": "<concrete visual + action; 1-2 sentences max>",
+        "lyric": "<short lyric/caption line synced to this beat>",
+        "camera": "<camera/shot directive: push-in, overhead, extreme CU, dutch, etc>",
+        "fx": "<motion/visual FX: speed lines, hearts, music notes, impact frame, motion blur, etc>",
+        "soundCue": "<diegetic sound for this beat — important for Veo 3 / audio sync>"
+      }
+      // ...repeat for ALL ${panelCount} panels
+    ]
+  },
+  "ipa": {
+    "fullBlock": "<the complete IPA phonetic block, panels separated by | bars>",
+    "perPanel": [
+      { "num": 1, "ipa": "<IPA for panel 1>", "syllableCount": <int> }
+      // ...for every panel
+    ]
+  },
+  "videoGen": {
+    "fullPrompt": "<the FINAL multi-shot video model prompt. For tools that support multi-shot generation (Sora multi-shot, Veo 3 multi-shot mode, Runway multi-clip): describe all ${panelCount} beats as one continuous narrative referencing the storyboard sequentially. For SINGLE-CLIP tools (Wan 2.2, Pika, Luma, Hailuo, single-shot Veo/Sora/Runway): this prompt is too long; user should run videoGen.perPanel entries individually instead. Include reference to character sheets and storyboard. Specify aspect, total duration, sequential beat instruction, and tool-specific syntax per the directive above.>",
+    "perPanel": [
+      {
+        "num": 1,
+        "prompt": "<single-clip video prompt for ONLY panel 1, formatted for ${targetTool}. 60-100 words. Describe THIS ONE BEAT only: action, camera angle, FX, motion, sound design. Duration approximately (total duration / panel count) seconds — compute from the brief's duration field divided by panel count. Panel 1 is the establishing shot — no continuity reference needed. End with: 'Reference the character sheets for character appearance. Match the storyboard panel 1 visual composition.'>"
+      }
+      /* GENERATE EXACTLY ${panelCount} ENTRIES — num 1 through ${panelCount}.
+         FOR PANELS 2 THROUGH ${panelCount}: include a CONTINUITY CLAUSE at the start of the prompt:
+         "CONTINUITY: matching the lighting, costume, location, character positions, and ending pose of panel N-1. Begin from where panel N-1 left off."
+         This enables I2V chaining: user can use the LAST FRAME of panel N-1 as the seed image for panel N.
+         For tools that support I2V (Wan 2.2, Runway, Kling, Luma): include note "[I2V workflow: use last frame of the previous panel's clip as the seed image for this clip]".
+         End each per-panel prompt with appropriate tool-specific reference syntax. */
+    ]
+  },
+  "footer": "PROJECT <TITLE> | FORMAT: <aspect> | DURATION: <N> SEC | TONE: <tone> | TOOL: <tool>",
+  "notes": "<2-3 short tips specific to this project — what to watch for, how to refine, alternate beats to consider>"
+}
+
+RULES:
+- Generate EXACTLY ${panelCount} panels — no more, no less.
+- Every panel must have action, lyric (or "—" if none), camera, fx, and soundCue.
+- IPA must be accurate phonetic English using standard IPA symbols. Sync the syllable count loosely to panel duration.
+- The videoGen prompt must explicitly say "treat the storyboard as sequential beats, not a single static image" AND "use the character sheet as strict appearance reference."
+- Use SPECIFIC camera language (push-in, dolly-out, overhead, dutch, low-angle hero, extreme CU, etc.).
+- The fullPrompt MUST request CLEAN PHOTOS ONLY with panel-number badges (max 2 characters per panel). DO NOT request the image gen to render scene captions, action text, lyrics, VO, dialog, header/footer banners, or any prose labels. The browser overlay layer handles ALL structured text downstream. Restate POSITIONAL ANCHORING (panel→position) explicitly inside fullPrompt as a final sentence — image generators scramble grids without it.
+- When multiple characters are named in the brief, reference each by their assigned NAME inside panel descriptions (not "character 1" — use the actual name like "HERO" or "GIRLFRIEND").
+- SUBJECT-AGNOSTIC CHARACTER HANDLING: Characters can be ANY type — humans, animals, robots/androids, aliens, vehicles, mythological creatures, mecha, plants, abstract entities. Image generators have a strong default toward humans; for any NON-HUMAN character, you MUST counteract this bias by being explicit about non-human identity. Examples: for a robot — "fully mechanical chrome humanoid, NO human skin or face, exposed servo joints, metal plates, definitely NOT a person in a costume"; for an animal — "[specific species and breed], distinctive [coat/feathers/scales] markings, quadrupedal/winged/etc., NOT anthropomorphized"; for an alien — "non-human anatomy, [specific traits like number of limbs, skin texture, eyes], unmistakably extraterrestrial, NOT a person in makeup"; for a vehicle character — "[specific make/model/year], distinct livery, [if anthropomorphic: face elements like headlight-eyes/grille-mouth]". When the user provides reference images for non-human characters, prioritize those visual cues. Always include explicit "NOT [the default human form]" exclusions when relevant.
+- CHARACTER SHEET PROMPT MUST end with: "Clean white background. NO text labels, NO annotations, NO captions, NO writing of any kind in the image — character figures only." Image generators garble label text reliably; the visual character information is fully sufficient without printed labels. This applies regardless of subject type.
+- The image-gen-formatted prompts (every characterSheets[].prompt and storyboard.fullPrompt) MUST follow the IMAGE GEN TOOL DIRECTIVE syntax exactly — every prompt OPENS with the tool-specific USER ACTION REQUIRED block defined in the directive, with [CHARACTER_NAME] replaced by the actual character name. This is MANDATORY — the user does not know to attach reference photos unless the prompt tells them. Never omit this block.
+- ONE SHEET PER CHARACTER: the characterSheets array MUST contain ONE ENTRY for each distinct character named in the brief. NEVER combine characters into a single sheet prompt — multi-character sheets fail at the tool level (Grok generates "variations" instead of "the same character"). Even single-character projects use the array format with one entry.
+- HUMAN FACE-LOCK GUIDANCE (directorsNotes): when the brief contains 1+ human characters, the directorsNotes/notes field MUST include this guidance: "Human face-lock from prompt-only image gen tools varies dramatically by tool. Best to worst (Q2 2026): ChatGPT GPT-4o with photo upload (~70-80%), Midjourney v7 with --cref --cw 100 (~85-90%), Imagen 4 with reference field (~75-85%), FLUX/SDXL with IP-Adapter FaceID (~70-85%), Grok Imagine with photo attached (~60-75%). For production-grade likeness (>90%), use LoRA training (Replicate FLUX LoRA, ~$5/character, ~20min) or post-process face-swap (FaceFusion / ReActor, free, runs locally on GPU). Generate the storyboard with generic faces, then face-swap each panel as a finishing step."
+- VIDEO GEN PER-PANEL MANDATE: in addition to videoGen.fullPrompt, generate exactly ${panelCount} entries in videoGen.perPanel — one per panel. Each per-panel prompt is 60-100 words, single-clip, references storyboard panel N visually. PANEL 1 needs no continuity ref (establishing shot). PANELS 2 THROUGH ${panelCount} MUST include a "CONTINUITY:" clause referencing panel N-1's lighting/costume/location/ending-pose state. This enables I2V chaining for stitch workflows. For I2V-capable tools, include the note "[I2V workflow: seed this clip with the last frame of panel N-1's output]".
+- WORKFLOW REALITY: the user generates each character sheet SEPARATELY (one image-gen run per character), then generates the storyboard composite (one run), then generates each video clip SEPARATELY (one video-gen run per panel) and stitches the clips in a video editor. The Director's Board outputs are designed for this multi-trip manual workflow. Make every prompt fully self-contained and copy-paste-ready.
+- BE DEPLOYABLE: every prompt should work as direct copy-paste into the corresponding tool.
+- Output ONLY the JSON object. No \`\`\`json fences. No commentary.`;
+}
+
+// v2.9 — Tool-specific user-action blocks for the bake-in directives step.
+// Each entry is the leading instructions block prepended to the directives prompt so the user knows exactly how to use it with their selected tool.
+const BAKEIN_TOOL_BLOCKS = {
+  chatgpt: `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOTE: ChatGPT GPT-4o is the recommended tool for this image-edit-with-overlays step.
+1. Open ChatGPT (GPT-4o or higher with image generation/edit).
+2. Click the 📎 attachment button.
+3. UPLOAD your generated storyboard image.
+4. Paste the prompt below in the same message as the attached image.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+
+  grok_imagine: `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠ NOTE: Grok Imagine is weaker at image-edit-with-baked-text. For this final overlay step, ChatGPT GPT-4o or Imagen 4 produce noticeably cleaner results. Consider switching imageTool for this step.
+If proceeding with Grok:
+1. Open Grok Imagine.
+2. ATTACH your generated storyboard image.
+3. Paste the prompt below.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+
+  midjourney: `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠ NOTE: Midjourney is poor at adding clean text overlays to existing images. Strongly recommend ChatGPT GPT-4o for this step instead.
+If proceeding with Midjourney:
+1. Upload your storyboard image to Discord, right-click → Copy Image Address.
+2. Replace [STORYBOARD_URL] in the prompt below with that URL.
+3. Paste to Midjourney with --sref [STORYBOARD_URL] (style reference) and accept that text fidelity will be limited.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+
+  imagen: `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open Imagen 4 (via Gemini app or Vertex AI Studio). Imagen handles image-edit-with-overlays well.
+2. UPLOAD your generated storyboard image to the reference image input field.
+3. Paste the prompt below into the prompt textbox.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+
+  flux: `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open fal.ai with FLUX.1 [edit] model (best for image-to-image edits with text overlays).
+2. UPLOAD your storyboard image as the input.
+3. Paste the prompt below.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+
+  sdxl: `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open A1111 / ComfyUI / Forge in img2img mode.
+2. UPLOAD your storyboard as the input image.
+3. Use ControlNet with low denoising strength (~0.3) to preserve underlying photography while adding overlays.
+4. Paste the prompt below.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+
+  generic: `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 USER ACTION REQUIRED — DO THIS FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RECOMMENDED tools for this step: ChatGPT GPT-4o or Imagen 4 (best at image-edit-with-clean-text-overlays). Most other tools handle this poorly.
+1. Open your image-gen tool of choice.
+2. UPLOAD your generated storyboard image.
+3. Paste the prompt below.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+};
+
+// v2.8 — Client-side name extraction. Parses CHARACTER textarea (and optionally CONCEPT) for character names so the model gets explicit names rather than guessing.
+// This is defense layer 1 against the model hallucinating personal names from any source (training data, memory-enabled backends, etc.).
+function extractCharacterNames(characterText, conceptText) {
+  const names = [];
+  const lines = (characterText || '').split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  for (const line of lines) {
+    // Pattern A: "NAME: description" — explicit colon
+    const colonMatch = line.match(/^([A-Za-z][A-Za-z0-9_\- ]{0,40}?):/);
+    if (colonMatch) {
+      const name = colonMatch[1].trim().toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
+      if (name && name.length > 1 && !names.includes(name)) names.push(name);
+      continue;
+    }
+    // Skip obvious instruction lines (don't start with verbs like "maintain", "use", etc.)
+    if (/^(maintain|use|reference|keep|with |all |the |a |an |for |to |make |ensure )/i.test(line)) continue;
+    if (line.length < 2) continue;
+    // Otherwise: take the first substantive word as the implicit character name
+    const cleaned = line.replace(/^(a|an|the|my|our)\s+/i, '');
+    const firstToken = cleaned.split(/[\s,.;]+/)[0].replace(/[^A-Za-z0-9_-]/g, '');
+    if (firstToken && firstToken.length > 1) {
+      const name = firstToken.toUpperCase();
+      if (!names.includes(name)) names.push(name);
+    }
+  }
+  return names;
+}
+
+// v2.9 — Generate the bake-in directives prompt from the current panel data + dropped storyboard image.
+// Returns the prompt string, or null + toast on missing prerequisites.
+function generateDirectivesPrompt() {
+  if (!COMPOSITE.imageDataUrl) {
+    showToast('Drop your generated storyboard image into Composite Preview first', 'error');
+    return null;
+  }
+  const v = state.versions.find(x => x.id === state.currentVersion);
+  if (!v?.parsed?.storyboard?.panels || !v.parsed.storyboard.panels.length) {
+    showToast('Generate a storyboard above first — then come back and drop the image', 'error');
+    return null;
+  }
+
+  const inputs = getInputs();
+  const panels = v.parsed.storyboard.panels;
+  const panelCount = panels.length;
+  const tool = inputs.imageTool || 'generic';
+
+  const POSITIONS = {
+    6:  ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'],
+    9:  ['top-left', 'top-center', 'top-right', 'middle-left', 'middle-center', 'middle-right', 'bottom-left', 'bottom-center', 'bottom-right'],
+    12: ['row1-left', 'row1-mid-left', 'row1-mid-right', 'row1-right', 'row2-left', 'row2-mid-left', 'row2-mid-right', 'row2-right', 'row3-left', 'row3-mid-left', 'row3-mid-right', 'row3-right'],
+  };
+  const positions = POSITIONS[panelCount] || Array.from({length: panelCount}, (_, i) => `panel ${i+1}`);
+
+  const block = BAKEIN_TOOL_BLOCKS[tool] || BAKEIN_TOOL_BLOCKS.generic;
+
+  const panelLines = panels.map((p, i) => {
+    const num = String(p.num || i + 1).padStart(2, '0');
+    const pos = positions[i] || `panel ${num}`;
+    const action = (p.action || '—').replace(/\s+/g, ' ').trim();
+    const lyric = p.lyric && p.lyric !== '—' ? p.lyric : '(no dialog)';
+    const sceneLabel = (action.split(/[,.]/)[0] || '').slice(0, 32).toUpperCase().trim();
+    return `PANEL ${num} (${pos}):
+  SCENE: ${sceneLabel}
+  ACTION: ${action}
+  VO: ${lyric}
+  SOUND: ${p.soundCue || '—'}`;
+  }).join('\n\n');
+
+  return `${block}
+
+PROMPT:
+Edit the attached storyboard image to add professional advertising-style text overlays to each of the ${panelCount} panels WITHOUT altering the underlying photography. The result should look like an industry-standard advertising or film storyboard deliverable — polished, clean typography, ready for client review.
+
+For EACH panel, add:
+1. A small panel-number badge in the TOP-LEFT corner of the panel ("01" through "${String(panelCount).padStart(2, '0')}")
+2. A dark translucent caption block anchored at the BOTTOM of the panel, occupying roughly 25% of the panel height
+3. Inside the caption block, in clean white sans-serif text:
+   - "SCENE:" label in amber/gold accent color (#F5A623 or similar), followed by the scene title in white
+   - Action description (1-2 lines max)
+   - "VO:" label followed by the voice-over/dialog line in italic
+
+Project: ${inputs.title || 'Storyboard'}
+Format: ${inputs.aspect}, ${inputs.duration}s, ${panelCount} panels
+Tone: ${inputs.tone}
+Visual Style: ${inputs.vstyle}
+
+PANEL DATA — apply each entry to the corresponding panel position:
+
+${panelLines}
+
+STYLE REQUIREMENTS (CRITICAL):
+- Keep typography crisp, legible, professional (clean system sans-serif — Helvetica/Arial/SF Pro feel)
+- Match the visual treatment of polished advertising/film storyboards (think agency presentation deck quality)
+- DO NOT alter the underlying photography in any way — only add the text overlays
+- DO NOT add decorative elements beyond the panel-number badge and bottom caption block
+- Maintain the exact panel layout, grid positions, and image content from the input
+- Caption blocks must be visually consistent across all panels (same height, same background opacity ~70%, same typography)
+- Text in caption blocks should be left-aligned with comfortable padding (~12px from edges)
+
+Output: a single image identical in dimensions and grid to the input, but with the text overlays baked in.`;
+}
+
+function buildUserMessage(inputs, isRefinement, refineFeedback) {
+  const aspectDim = ASPECT_DIMS[inputs.aspect] || ASPECT_DIMS['16:9'];
+  // v2.8 — Extract names client-side and pass them explicitly to the model
+  const extractedNames = extractCharacterNames(inputs.character, inputs.concept);
+  const namesField = extractedNames.length > 0
+    ? `CHARACTER_NAMES_TO_USE: ${extractedNames.join(', ')} (use EXACTLY these names in characterSheets[].character_name — do NOT substitute, do NOT add personal first names)`
+    : `CHARACTER_NAMES_TO_USE: (none extracted — use generic placeholders CHARACTER_1, CHARACTER_2, etc.)`;
+  let text = `PROJECT: ${inputs.title}
+CONCEPT: ${inputs.concept || '(none — invent based on character + tone)'}
+CHARACTERS: ${inputs.character || '(none — invent based on concept)'}
+${namesField}
+STORYBOARD LAYOUT: ${inputs.layoutStyle || 'comic_ink'}
+VISUAL STYLE: ${inputs.vstyle}
+TONE: ${inputs.tone}
+DURATION: ${inputs.duration} seconds
+ASPECT: ${inputs.aspect} (${aspectDim.w}×${aspectDim.h})
+PANELS: ${inputs.panelCount} panels (${inputs.panelCount === 6 ? '3×2' : inputs.panelCount === 12 ? '4×3' : '3×3'} grid)
+VIDEO TARGET TOOL: ${inputs.targetTool}
+IMAGE GEN TOOL: ${inputs.imageTool || 'generic'}
+LYRICS: ${inputs.lyrics || '(none — invent rhythmic captions matching concept and tone)'}
+REFERENCE IMAGES: ${state.uploadedImages.length} attached${state.uploadedImages.length ? ' — ' + state.uploadedImages.map(i => `${i.name} [${i.role.toUpperCase()}]`).join(', ') : ''}
+CHARACTER REF COUNT: ${state.uploadedImages.filter(i => i.role && i.role.startsWith('char')).length} (CHAR1/CHAR2/CHAR3 are distinct named characters)`;
+
+  if (isRefinement && refineFeedback) {
+    text = `REFINEMENT REQUEST — apply this feedback while preserving everything not mentioned:
+
+"${refineFeedback}"
+
+Re-output the FULL JSON with refinements applied. Original brief follows for reference:
+
+` + text;
+  }
+  return text;
+}
+
+async function callClaude(messages, isRefinement) {
+  const inputs = getInputs();
+  const t0 = performance.now();
+
+  // Verify config
+  if (!apiConfig.endpoint) {
+    showSettings();
+    throw new Error('No API endpoint configured. Open settings (⚙) and pick a backend.');
+  }
+
+  const useImages = state.uploadedImages.length > 0 && !apiConfig.skipImages && !isRefinement;
+  const lastMsg = messages[messages.length - 1];
+
+  let response;
+  let parsedText = '';
+  let usage = { input: 0, output: 0 };
+  const sysPrompt = buildSystemPrompt(inputs.panelCount, inputs.targetTool, useImages, inputs.layoutStyle, state.uploadedImages.filter(i => i.role && i.role.startsWith('char')).length, inputs.imageTool);
+
+  if (apiConfig.format === 'anthropic') {
+    // ===== ANTHROPIC /v1/messages =====
+    let msgs = messages;
+    if (typeof lastMsg.content === 'string' && useImages) {
+      const blocks = [
+        { type: 'text', text: lastMsg.content },
+        ...state.uploadedImages.map(img => ({
+          type: 'image',
+          source: { type: 'base64', media_type: img.mediaType, data: img.base64 }
+        }))
+      ];
+      msgs = [...messages.slice(0, -1), { role: 'user', content: blocks }];
+    }
+    response = await fetch(apiConfig.endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiConfig.key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: apiConfig.model || 'claude-sonnet-4-5',
+        max_tokens: apiConfig.maxTokens || 6000,
+        system: sysPrompt,
+        messages: msgs,
+      }),
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message || 'Anthropic API error');
+    parsedText = (data.content || []).map(b => b.type === 'text' ? b.text : '').join('');
+    usage = { input: data.usage?.input_tokens || 0, output: data.usage?.output_tokens || 0 };
+    state.diagnostics.model = data.model || apiConfig.model;
+
+  } else {
+    // ===== OPENAI-COMPATIBLE /v1/chat/completions =====
+    // (MiniMax, llama-server, Together, Groq, OpenRouter, etc.)
+    let msgs = [{ role: 'system', content: sysPrompt }, ...messages];
+    if (typeof lastMsg.content === 'string' && useImages) {
+      const blocks = [
+        { type: 'text', text: lastMsg.content },
+        ...state.uploadedImages.map(img => ({
+          type: 'image_url',
+          image_url: { url: `data:${img.mediaType};base64,${img.base64}` }
+        }))
+      ];
+      msgs = [{ role: 'system', content: sysPrompt }, ...messages.slice(0, -1), { role: 'user', content: blocks }];
+    }
+    const body = {
+      model: apiConfig.model || 'MiniMax-M2',
+      max_tokens: apiConfig.maxTokens || 6000,
+      messages: msgs,
+      temperature: 0.7,
+      stream: false,
+    };
+    response = await fetch(apiConfig.endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiConfig.key}`,
+      },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      let errText = `HTTP ${response.status}`;
+      try { const eb = await response.json(); errText = eb.error?.message || eb.message || JSON.stringify(eb); } catch {}
+      throw new Error(`API error: ${errText}`);
+    }
+    const data = await response.json();
+    parsedText = data.choices?.[0]?.message?.content || '';
+    if (!parsedText) throw new Error('Empty response from model. Check model name and endpoint.');
+    usage = {
+      input: data.usage?.prompt_tokens || 0,
+      output: data.usage?.completion_tokens || 0,
+    };
+    state.diagnostics.model = data.model || apiConfig.model;
+  }
+
+  state.diagnostics.lastTime = ((performance.now() - t0) / 1000).toFixed(1);
+  state.diagnostics.lastTokens = usage.input + usage.output;
+  renderDiag();
+  return parsedText;
+}
+
+// ============================================================================
+// PARSE JSON OUTPUT (with fallback recovery)
+// ============================================================================
+function extractJSON(text) {
+  // Strip code fences if present
+  let s = text.trim();
+  s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '');
+  // Find first { and last }
+  const start = s.indexOf('{');
+  const end = s.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('No JSON object found in response');
+  s = s.slice(start, end + 1);
+  return JSON.parse(s);
+}
+
+function parseResponse(rawText) {
+  try {
+    const obj = extractJSON(rawText);
+    return { ok: true, data: obj };
+  } catch (e) {
+    return { ok: false, error: e.message, raw: rawText };
+  }
+}
+
+// ============================================================================
+// RENDERING
+// ============================================================================
+function renderStoryboard(parsed, panelCount) {
+  const panels = parsed.storyboard?.panels || [];
+  const cols = panelCount === 12 ? 4 : 3;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'sb-grid-wrap';
+  wrap.innerHTML = `
+    <div class="sb-meta">
+      <div>🎬 STORYBOARD PREVIEW · click any panel to inspect</div>
+      <div class="sb-meta-tag">${panels.length} / ${panelCount} panels</div>
+    </div>
+  `;
+
+  const grid = document.createElement('div');
+  grid.className = `sb-grid cols-${cols}`;
+  panels.forEach((p, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'sb-panel';
+    cell.dataset.idx = idx;
+    cell.innerHTML = `
+      <div class="panel-num">
+        <span>◼ ${p.num}/${panelCount}</span>
+        ${p.fx ? `<span class="panel-num-fx">${escapeHtml(p.fx.slice(0, 24))}</span>` : ''}
+      </div>
+      <div class="panel-action">${escapeHtml(p.action || '')}</div>
+      ${p.lyric && p.lyric !== '—' ? `<div class="panel-lyric">"${escapeHtml(p.lyric)}"</div>` : ''}
+      ${p.camera ? `<div class="panel-cam">📷 ${escapeHtml(p.camera)}</div>` : ''}
+    `;
+    cell.onclick = () => togglePanelDetail(idx, parsed);
+    grid.appendChild(cell);
+  });
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function togglePanelDetail(idx, parsed) {
+  // Remove any existing detail
+  document.querySelectorAll('.panel-detail').forEach(d => d.remove());
+  document.querySelectorAll('.sb-panel').forEach(p => p.classList.remove('active'));
+
+  if (state.activePanelIdx === idx) {
+    state.activePanelIdx = -1;
+    return;
+  }
+  state.activePanelIdx = idx;
+  const panel = parsed.storyboard.panels[idx];
+  const cell = document.querySelector(`.sb-panel[data-idx="${idx}"]`);
+  if (!cell) return;
+  cell.classList.add('active');
+
+  const detail = document.createElement('div');
+  detail.className = 'panel-detail';
+  detail.innerHTML = `
+    <div class="panel-detail-title">PANEL ${panel.num} — INSPECT &amp; EDIT</div>
+    <div class="panel-detail-row">
+      <div class="lbl">Action</div>
+      <textarea data-field="action" rows="2">${escapeHtml(panel.action || '')}</textarea>
+    </div>
+    <div class="panel-detail-row">
+      <div class="lbl">Lyric</div>
+      <textarea data-field="lyric" rows="1">${escapeHtml(panel.lyric || '')}</textarea>
+    </div>
+    <div class="panel-detail-row">
+      <div class="lbl">Camera</div>
+      <textarea data-field="camera" rows="1">${escapeHtml(panel.camera || '')}</textarea>
+    </div>
+    <div class="panel-detail-row">
+      <div class="lbl">FX</div>
+      <textarea data-field="fx" rows="1">${escapeHtml(panel.fx || '')}</textarea>
+    </div>
+    <div class="panel-detail-row">
+      <div class="lbl">Sound Cue</div>
+      <textarea data-field="soundCue" rows="1">${escapeHtml(panel.soundCue || '')}</textarea>
+    </div>
+    <div class="panel-detail-row">
+      <div class="lbl">IPA</div>
+      <textarea data-field="ipa" rows="1">${escapeHtml(parsed.ipa?.perPanel?.[idx]?.ipa || '')}</textarea>
+    </div>
+    <div class="panel-detail-actions">
+      <button class="panel-cancel-btn" id="panelCancel">CANCEL</button>
+      <button class="panel-save-btn" id="panelSave">SAVE TO PANEL</button>
+    </div>
+  `;
+  cell.parentElement.parentElement.appendChild(detail);
+
+  $('panelCancel').onclick = () => { detail.remove(); cell.classList.remove('active'); state.activePanelIdx = -1; };
+  $('panelSave').onclick = () => {
+    // v2.5.1 — capture old field values BEFORE overwrite, for storyboard.fullPrompt propagation
+    const oldValues = {
+      action: panel.action || '',
+      lyric: panel.lyric || '',
+      camera: panel.camera || '',
+      fx: panel.fx || '',
+      soundCue: panel.soundCue || ''
+    };
+    let promptUpdated = false;
+    detail.querySelectorAll('textarea').forEach(t => {
+      const f = t.dataset.field;
+      if (f === 'ipa') {
+        if (!parsed.ipa.perPanel[idx]) parsed.ipa.perPanel[idx] = { num: panel.num };
+        parsed.ipa.perPanel[idx].ipa = t.value;
+      } else {
+        const newVal = t.value;
+        // v2.5.1 — attempt verbatim propagation to storyboard.fullPrompt
+        if (oldValues[f] && newVal !== oldValues[f] && parsed.storyboard?.fullPrompt) {
+          if (parsed.storyboard.fullPrompt.includes(oldValues[f])) {
+            parsed.storyboard.fullPrompt = parsed.storyboard.fullPrompt.split(oldValues[f]).join(newVal);
+            promptUpdated = true;
+          }
+        }
+        panel[f] = newVal;
+      }
+    });
+    // Rebuild fullBlock from per-panel IPA
+    if (parsed.ipa?.perPanel) {
+      parsed.ipa.fullBlock = parsed.ipa.perPanel.map(p => `[${p.ipa || ''}]`).join(' ');
+    }
+    rerenderCurrentVersion(parsed);
+    toast(promptUpdated
+      ? '✓ Panel + storyboard prompt updated'
+      : '✓ Panel saved. For prompt-level changes, click REFINE.',
+      'success');
+  };
+}
+
+function renderPromptCard(num, title, content, icon) {
+  const card = document.createElement('div');
+  card.className = 'prompt-card';
+  card.innerHTML = `
+    <div class="prompt-card-header">
+      <div class="prompt-card-title"><div class="step-badge">${num}</div>${icon} ${title}</div>
+      <button class="copy-btn">COPY</button>
+    </div>
+    <div class="prompt-body">${escapeHtml(content)}</div>
+  `;
+  card.querySelector('.copy-btn').onclick = function() { copyToClipboard(content, this); };
+  return card;
+}
+
+function renderVersionsBar() {
+  if (state.versions.length === 0) return null;
+  const bar = document.createElement('div');
+  bar.className = 'versions-bar';
+  state.versions.forEach((v, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'version-chip' + (state.currentVersion === v.id ? ' current' : '');
+    chip.innerHTML = `${v.label}<div class="version-chip-meta">${fmtTs(v.ts)}</div>`;
+    chip.onclick = () => { state.currentVersion = v.id; rerenderFromVersion(v); };
+    bar.appendChild(chip);
+  });
+  return bar;
+}
+
+function renderExportBar(parsed) {
+  const bar = document.createElement('div');
+  bar.className = 'export-bar';
+  bar.innerHTML = `
+    <button class="export-btn" data-act="md">📄 .MD BUNDLE</button>
+    <button class="export-btn" data-act="json">💾 .JSON</button>
+    <button class="export-btn" data-act="txt">📋 .TXT (ALL)</button>
+    <button class="export-btn" data-act="prompts">🎯 PROMPTS PACK</button>
+  `;
+  bar.querySelectorAll('button').forEach(b => b.onclick = () => exportAs(b.dataset.act, parsed));
+  return bar;
+}
+
+function renderDiag() {
+  if (!state.showDiag) return;
+  let diag = $('diagPanel');
+  if (!diag) {
+    diag = document.createElement('div');
+    diag.id = 'diagPanel';
+    diag.className = 'diag';
+    const out = $('output');
+    out.insertBefore(diag, out.firstChild);
+  }
+  const d = state.diagnostics;
+  const tokenColor = d.lastTokens > 5000 ? 'warn' : 'good';
+  diag.innerHTML = `
+    <div class="diag-item">⚙ MODEL: <span class="v">${d.model || '—'}</span></div>
+    <div class="diag-item">⏱ TIME: <span class="v">${d.lastTime || 0}s</span></div>
+    <div class="diag-item">🔢 TOKENS: <span class="v ${tokenColor}">${d.lastTokens || 0}</span></div>
+    <div class="diag-item">🖼 IMG REFS: <span class="v">${state.uploadedImages.length}</span></div>
+    <div class="diag-item">📜 VERSIONS: <span class="v">${state.versions.length}</span></div>
+  `;
+}
+
+function renderOutput(parsed) {
+  const out = $('output');
+  const inputs = getInputs();
+
+  // Clear everything except status bar
+  Array.from(out.children).forEach(c => {
+    if (c.id !== 'statusBar' && c.id !== 'diagPanel' && c.id !== 'compositePreview') c.remove();
+  });
+  $('emptyState')?.remove();
+
+  // Versions bar
+  const verBar = renderVersionsBar();
+  if (verBar) out.appendChild(verBar);
+
+  // Storyboard
+  out.appendChild(renderStoryboard(parsed, inputs.panelCount));
+
+  // Notes
+  if (parsed.notes) {
+    const notes = document.createElement('div');
+    notes.className = 'status-bar warn';
+    notes.innerHTML = `💡 <strong>Director's notes:</strong> &nbsp; ${escapeHtml(parsed.notes)}`;
+    out.appendChild(notes);
+  }
+
+  // Prompt cards
+  const cardsWrap = document.createElement('div');
+  cardsWrap.style.display = 'flex';
+  cardsWrap.style.flexDirection = 'column';
+  cardsWrap.style.gap = '14px';
+  cardsWrap.innerHTML = `<div class="section-label" style="margin-bottom:6px">📄 GENERATED PROMPTS · COPY-PASTE READY</div>`;
+
+  // v2.7 — schema migration: characterSheets array (preferred) with fallback to legacy single string
+  const charSheets = Array.isArray(parsed.characterSheets) && parsed.characterSheets.length
+    ? parsed.characterSheets
+    : (parsed.characterSheet ? [{ character_name: 'CHARACTER', prompt: parsed.characterSheet }] : []);
+  const sbFull = parsed.storyboard?.fullPrompt || '';
+  const ipaFull = parsed.ipa?.fullBlock || '';
+  const ipaPerPanel = (parsed.ipa?.perPanel || []).map(p => `[Panel ${p.num}] ${p.ipa}`).join('\n');
+  // v2.7 — videoGen schema: object with fullPrompt + perPanel (preferred), fallback to legacy string
+  const videoGenFull = (typeof parsed.videoGen === 'object' && parsed.videoGen?.fullPrompt)
+    ? parsed.videoGen.fullPrompt
+    : (typeof parsed.videoGen === 'string' ? parsed.videoGen : '');
+  const videoPerPanel = (typeof parsed.videoGen === 'object' && Array.isArray(parsed.videoGen?.perPanel))
+    ? parsed.videoGen.perPanel
+    : [];
+  const footer = parsed.footer || '';
+
+  // v2.7 — Workflow Guide panel (multi-trip workflow visualization)
+  const charCount = charSheets.length;
+  const panelCount = (parsed.storyboard?.panels || []).length || inputs.panelCount;
+  const wfGuide = document.createElement('div');
+  wfGuide.style.cssText = 'background:var(--surface2); border:1px solid var(--amber-dim); border-radius:8px; padding:14px 16px; margin-bottom:6px;';
+  wfGuide.innerHTML = `
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:2px; color:var(--amber); margin-bottom:8px;">📋 WORKFLOW · MULTI-TRIP · ${charCount} CHARACTER${charCount === 1 ? '' : 'S'} · ${panelCount} PANELS</div>
+    <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted-bright); line-height:1.7;">
+      <div>▶️ <b style="color:var(--text)">STEP 1:</b> Run each Character Sheet Prompt below in your image gen — <b style="color:var(--amber-bright)">${charCount} separate runs, attach the matching reference photo each time</b>.</div>
+      <div>▶️ <b style="color:var(--text)">STEP 2:</b> Once you have all character sheets, run the Storyboard Image Prompt — attach all character sheets to your image gen. Output: clean photo grid, no text.</div>
+      <div>▶️ <b style="color:var(--text)">STEP 3:</b> Drop the clean storyboard image into the Composite Preview at the bottom of this page, then click <b style="color:var(--amber-bright)">📝 Generate Bake-in Prompt</b>. Take that prompt + your image back to your image gen (ChatGPT GPT-4o recommended) → returns the storyboard with SCENE/ACTION/VO baked into each panel.</div>
+      <div>▶️ <b style="color:var(--text)">STEP 4:</b> Run each Per-Panel Video Prompt in your video gen — <b style="color:var(--amber-bright)">${panelCount} separate runs, then stitch the clips in your editor</b>.</div>
+      <div style="margin-top:6px; color:var(--muted); font-size:10px;">⚠ Use I2V (image-to-video) on panels 2+ if your video tool supports it — seed each clip with the last frame of the previous one for continuity.</div>
+    </div>
+  `;
+  cardsWrap.appendChild(wfGuide);
+
+  // v2.7 — One card per character (or single fallback)
+  if (charSheets.length === 0) {
+    cardsWrap.appendChild(renderPromptCard(1, 'CHARACTER SHEET PROMPT', '(no characters detected)', '🎭'));
+  } else {
+    charSheets.forEach((cs, idx) => {
+      const label = `CHARACTER SHEET — ${cs.character_name || ('CHARACTER ' + (idx + 1))}`;
+      const num = charSheets.length === 1 ? 1 : `1.${idx + 1}`;
+      cardsWrap.appendChild(renderPromptCard(num, label, cs.prompt || '(empty)', '🎭'));
+    });
+  }
+
+  cardsWrap.appendChild(renderPromptCard(2, 'STORYBOARD IMAGE PROMPT', sbFull + (footer ? '\n\n' + footer : ''), '📋'));
+  cardsWrap.appendChild(renderPromptCard(3, 'IPA AUDIO SYNC (full)', ipaFull, '🎵'));
+  if (ipaPerPanel) cardsWrap.appendChild(renderPromptCard('3b', 'IPA PER PANEL', ipaPerPanel, '🎤'));
+  cardsWrap.appendChild(renderPromptCard(4, `VIDEO GEN PROMPT (FULL) — ${inputs.targetTool.toUpperCase()}`, videoGenFull, '🎬'));
+
+  // v2.7 — Per-panel video prompts card (for single-clip workflows)
+  if (videoPerPanel.length) {
+    const ppText = videoPerPanel.map(p => {
+      const n = String(p.num || '').padStart(2, '0');
+      return `═══════════ PANEL ${n} CLIP ═══════════\n${p.prompt || '(empty)'}`;
+    }).join('\n\n');
+    cardsWrap.appendChild(renderPromptCard('4b', `PER-PANEL VIDEO PROMPTS (${videoPerPanel.length} CLIPS) — ${inputs.targetTool.toUpperCase()}`, ppText, '🎞️'));
+  }
+
+  out.appendChild(cardsWrap);
+
+  // Export bar
+  out.appendChild(renderExportBar(parsed));
+
+  // v2.5 — keep Composite Preview at bottom of #output across renders
+  const cp = $('compositePreview');
+  if (cp) out.appendChild(cp);
+  if (typeof renderComposite === 'function') renderComposite();
+
+  if (state.showDiag) renderDiag();
+}
+
+function rerenderCurrentVersion(parsed) {
+  // Update the current version in state
+  const v = state.versions.find(x => x.id === state.currentVersion);
+  if (v) v.parsed = parsed;
+  renderOutput(parsed);
+}
+
+function rerenderFromVersion(v) {
+  setInputs(v.inputs);
+  renderOutput(v.parsed);
+}
+
+// ============================================================================
+// EXPORT
+// ============================================================================
+function exportAs(format, parsed) {
+  const inputs = getInputs();
+  const fnameBase = (inputs.title || 'storyboard').replace(/[^a-z0-9_-]/gi, '_').toLowerCase();
+  const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+
+  if (format === 'json') {
+    downloadBlob(JSON.stringify(parsed, null, 2), `${fnameBase}_${ts}.json`, 'application/json');
+    toast('JSON exported', 'success');
+  } else if (format === 'md') {
+    const md = buildMarkdown(parsed, inputs);
+    downloadBlob(md, `${fnameBase}_${ts}.md`, 'text/markdown');
+    toast('Markdown bundle exported', 'success');
+  } else if (format === 'txt') {
+    const txt = buildPlainText(parsed, inputs);
+    downloadBlob(txt, `${fnameBase}_${ts}.txt`, 'text/plain');
+    toast('Plain text exported', 'success');
+  } else if (format === 'prompts') {
+    const pack = buildPromptsPack(parsed, inputs);
+    downloadBlob(pack, `${fnameBase}_prompts_${ts}.txt`, 'text/plain');
+    toast('Prompts pack exported', 'success');
+  }
+}
+
+function buildMarkdown(parsed, inputs) {
+  const panels = parsed.storyboard?.panels || [];
+  return `# ${inputs.title}
+
+> ${inputs.concept || ''}
+
+| | |
+|---|---|
+| **Tone** | ${inputs.tone} |
+| **Duration** | ${inputs.duration}s |
+| **Aspect** | ${inputs.aspect} |
+| **Style** | ${inputs.vstyle} |
+| **Target Tool** | ${inputs.targetTool} |
+| **Panels** | ${inputs.panelCount} |
+
+---
+
+## 🎭 Step 1 — Character Sheet Prompts (run each separately)
+
+${(() => {
+  const cs = Array.isArray(parsed.characterSheets) && parsed.characterSheets.length
+    ? parsed.characterSheets
+    : (parsed.characterSheet ? [{character_name: 'CHARACTER', prompt: parsed.characterSheet}] : []);
+  return cs.map((c, i) => `### 1.${i+1} — ${c.character_name || ('CHARACTER ' + (i+1))}
+
+\`\`\`
+${c.prompt || ''}
+\`\`\`
+`).join('\n');
+})()}
+
+## 📋 Step 2 — Storyboard Image Prompt
+
+\`\`\`
+${parsed.storyboard?.fullPrompt || ''}
+
+${parsed.footer || ''}
+\`\`\`
+
+### Panel breakdown
+
+${panels.map(p => `**Panel ${p.num}** — ${p.action}
+- Lyric: *${p.lyric || '—'}*
+- Camera: ${p.camera || '—'}
+- FX: ${p.fx || '—'}
+- Sound: ${p.soundCue || '—'}
+`).join('\n')}
+
+## 🎵 Step 3 — IPA Audio Sync
+
+**Full block:**
+
+\`\`\`
+${parsed.ipa?.fullBlock || ''}
+\`\`\`
+
+**Per panel:**
+
+${(parsed.ipa?.perPanel || []).map(p => `- Panel ${p.num}: \`${p.ipa}\` (${p.syllableCount || '?'} syll)`).join('\n')}
+
+## 🎬 Step 4 — Video Gen Prompt (${inputs.targetTool})
+
+### Full multi-shot prompt (for multi-shot tools)
+
+\`\`\`
+${(typeof parsed.videoGen === 'object' && parsed.videoGen?.fullPrompt) ? parsed.videoGen.fullPrompt : (typeof parsed.videoGen === 'string' ? parsed.videoGen : '')}
+\`\`\`
+
+### Per-panel prompts (for single-clip tools — run each separately, stitch)
+
+${(() => {
+  const pp = (typeof parsed.videoGen === 'object' && Array.isArray(parsed.videoGen?.perPanel)) ? parsed.videoGen.perPanel : [];
+  if (!pp.length) return '_(no per-panel prompts generated)_';
+  return pp.map(p => `**Panel ${p.num}:**
+
+\`\`\`
+${p.prompt || ''}
+\`\`\`
+`).join('\n');
+})()}
+
+---
+
+### 💡 Director's Notes
+
+${parsed.notes || '—'}
+`;
+}
+
+function buildPlainText(parsed, inputs) {
+  const panels = parsed.storyboard?.panels || [];
+  return `${'='.repeat(70)}
+PROJECT: ${inputs.title}
+${parsed.footer || ''}
+${'='.repeat(70)}
+
+CONCEPT: ${inputs.concept}
+CHARACTER: ${inputs.character}
+
+--- STEP 1: CHARACTER SHEET PROMPTS (run each separately) ---
+${(() => {
+  const cs = Array.isArray(parsed.characterSheets) && parsed.characterSheets.length
+    ? parsed.characterSheets
+    : (parsed.characterSheet ? [{character_name: 'CHARACTER', prompt: parsed.characterSheet}] : []);
+  return cs.map((c, i) => `
+[1.${i+1}] ${c.character_name || ('CHARACTER ' + (i+1))}
+${c.prompt || ''}
+`).join('\n');
+})()}
+
+--- STEP 2: STORYBOARD IMAGE PROMPT ---
+${parsed.storyboard?.fullPrompt || ''}
+
+${parsed.footer || ''}
+
+--- PANEL BREAKDOWN ---
+${panels.map(p => `[Panel ${p.num}]
+  Action: ${p.action}
+  Lyric:  ${p.lyric || '—'}
+  Camera: ${p.camera || '—'}
+  FX:     ${p.fx || '—'}
+  Sound:  ${p.soundCue || '—'}
+`).join('\n')}
+
+--- STEP 3: IPA AUDIO SYNC ---
+${parsed.ipa?.fullBlock || ''}
+
+--- STEP 4: VIDEO GEN PROMPT (${inputs.targetTool.toUpperCase()}) ---
+
+[FULL MULTI-SHOT PROMPT]
+${(typeof parsed.videoGen === 'object' && parsed.videoGen?.fullPrompt) ? parsed.videoGen.fullPrompt : (typeof parsed.videoGen === 'string' ? parsed.videoGen : '')}
+
+[PER-PANEL PROMPTS — run each separately, stitch in editor]
+${(() => {
+  const pp = (typeof parsed.videoGen === 'object' && Array.isArray(parsed.videoGen?.perPanel)) ? parsed.videoGen.perPanel : [];
+  if (!pp.length) return '(no per-panel prompts generated)';
+  return pp.map(p => `
+═══ PANEL ${p.num} ═══
+${p.prompt || ''}
+`).join('\n');
+})()}
+
+--- DIRECTOR'S NOTES ---
+${parsed.notes || ''}
+`;
+}
+
+function buildPromptsPack(parsed, inputs) {
+  const cs = Array.isArray(parsed.characterSheets) && parsed.characterSheets.length
+    ? parsed.characterSheets
+    : (parsed.characterSheet ? [{character_name: 'CHARACTER', prompt: parsed.characterSheet}] : []);
+  const charBlock = cs.map((c, i) => `### CHARACTER SHEET ${i+1} — ${c.character_name || ('CHARACTER ' + (i+1))} (run separately, attach matching ref photo)
+${c.prompt || ''}
+`).join('\n');
+
+  const vgFull = (typeof parsed.videoGen === 'object' && parsed.videoGen?.fullPrompt)
+    ? parsed.videoGen.fullPrompt
+    : (typeof parsed.videoGen === 'string' ? parsed.videoGen : '');
+  const pp = (typeof parsed.videoGen === 'object' && Array.isArray(parsed.videoGen?.perPanel)) ? parsed.videoGen.perPanel : [];
+  const ppBlock = pp.length
+    ? pp.map(p => `### PANEL ${p.num} VIDEO CLIP\n${p.prompt || ''}`).join('\n\n')
+    : '(no per-panel prompts)';
+
+  return `${charBlock}
+### STORYBOARD PROMPT (paste into image gen, attach all character sheets)
+${parsed.storyboard?.fullPrompt || ''}
+
+${parsed.footer || ''}
+
+### IPA BLOCK (for audio/lyrics sync)
+${parsed.ipa?.fullBlock || ''}
+
+### VIDEO GEN PROMPT — FULL MULTI-SHOT (${inputs.targetTool})
+${vgFull}
+
+### VIDEO GEN PROMPTS — PER-PANEL (${inputs.targetTool}, single-clip workflow)
+${ppBlock}
+`;
+}
+
+// ============================================================================
+// SAVE / LOAD PROJECT
+// ============================================================================
+function saveProject() {
+  const project = {
+    schema: 'directors-board-v2',
+    savedAt: new Date().toISOString(),
+    inputs: getInputs(),
+    images: state.uploadedImages,
+    versions: state.versions,
+    currentVersion: state.currentVersion,
+    conversationHistory: state.conversationHistory,
+  };
+  const inputs = getInputs();
+  const fname = `project_${(inputs.title || 'untitled').replace(/[^a-z0-9_-]/gi, '_').toLowerCase()}_${Date.now()}.json`;
+  downloadBlob(JSON.stringify(project, null, 2), fname, 'application/json');
+  toast('Project saved', 'success');
+}
+
+function loadProject(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const p = JSON.parse(e.target.result);
+      if (p.schema !== 'directors-board-v2') {
+        toast('Unrecognized project format', 'error');
+        return;
+      }
+      setInputs(p.inputs);
+      state.uploadedImages = p.images || [];
+      state.versions = p.versions || [];
+      state.currentVersion = p.currentVersion;
+      state.conversationHistory = p.conversationHistory || [];
+      state.hasGenerated = state.versions.length > 0;
+      renderThumbs();
+      $('refineBtn').disabled = !state.hasGenerated;
+
+      const cur = state.versions.find(v => v.id === state.currentVersion);
+      if (cur) renderOutput(cur.parsed);
+      toast('Project loaded', 'success');
+    } catch (err) {
+      toast('Load failed: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================================
+// GENERATE & REFINE
+// ============================================================================
+async function generate() {
+  const inputs = getInputs();
+  if (!inputs.concept && !inputs.character && state.uploadedImages.length === 0) {
+    toast('Add concept, character, or reference image first', 'error');
+    return;
+  }
+
+  $('genBtn').disabled = true;
+  $('refineBtn').disabled = true;
+  $('emptyState')?.remove();
+  setStatus(`Generating ${inputs.panelCount}-panel storyboard${state.uploadedImages.length ? ` with ${state.uploadedImages.length} image ref${state.uploadedImages.length>1?'s':''}` : ''}...`, 'loading');
+
+  const userMsg = buildUserMessage(inputs, false, '');
+  state.conversationHistory = [{ role: 'user', content: userMsg }];
+
+  try {
+    const result = await callClaude(state.conversationHistory, false);
+    state.conversationHistory.push({ role: 'assistant', content: result });
+
+    const { ok, data, error, raw } = parseResponse(result);
+    if (!ok) {
+      setStatus(`Parse error: ${error}. Showing raw output.`, 'error');
+      const out = $('output');
+      const card = renderPromptCard(1, 'RAW OUTPUT (parse failed)', raw, '⚠️');
+      out.appendChild(card);
+      return;
+    }
+
+    // Push version
+    const vid = uid();
+    state.versions.push({
+      id: vid,
+      label: `v${state.versions.length + 1}`,
+      ts: Date.now(),
+      parsed: data,
+      raw: result,
+      inputs,
+    });
+    state.currentVersion = vid;
+
+    renderOutput(data);
+    setStatus(`✅ Done in ${state.diagnostics.lastTime}s · ${state.diagnostics.lastTokens} tokens · ${data.storyboard?.panels?.length || 0} panels rendered`, 'done');
+    state.hasGenerated = true;
+    $('refineBtn').disabled = false;
+  } catch (err) {
+    setStatus('Error: ' + err.message, 'error');
+    toast(err.message, 'error');
+  }
+
+  $('genBtn').disabled = false;
+}
+
+async function refine() {
+  if (!state.hasGenerated) return;
+  const inputs = getInputs();
+  const feedback = inputs.feedback;
+  if (!feedback) {
+    toast('Add refinement notes in the feedback box first', 'error');
+    return;
+  }
+
+  $('genBtn').disabled = true;
+  $('refineBtn').disabled = true;
+  setStatus('Applying refinement...', 'loading');
+
+  const refineMsg = buildUserMessage(inputs, true, feedback);
+  state.conversationHistory.push({ role: 'user', content: refineMsg });
+
+  try {
+    const result = await callClaude(state.conversationHistory, true);
+    state.conversationHistory.push({ role: 'assistant', content: result });
+
+    const { ok, data, error } = parseResponse(result);
+    if (!ok) {
+      setStatus(`Refinement parse error: ${error}`, 'error');
+      return;
+    }
+
+    const vid = uid();
+    state.versions.push({
+      id: vid,
+      label: `v${state.versions.length + 1}`,
+      ts: Date.now(),
+      parsed: data,
+      raw: result,
+      inputs,
+    });
+    state.currentVersion = vid;
+
+    renderOutput(data);
+    setStatus(`✅ Refinement applied · ${state.diagnostics.lastTime}s · ${state.diagnostics.lastTokens} tokens`, 'done');
+    $('feedback').value = '';
+  } catch (err) {
+    setStatus('Error: ' + err.message, 'error');
+    toast(err.message, 'error');
+  }
+
+  $('genBtn').disabled = false;
+  $('refineBtn').disabled = !state.hasGenerated;
+}
+
+// ============================================================================
+// EVENT BINDINGS
+// ============================================================================
+$('genBtn').onclick = generate;
+$('refineBtn').onclick = refine;
+$('saveBtn').onclick = saveProject;
+$('loadBtn').onchange = e => { if (e.target.files[0]) loadProject(e.target.files[0]); };
+
+$('diagBtn').onclick = () => {
+  state.showDiag = !state.showDiag;
+  if (state.showDiag) renderDiag();
+  else $('diagPanel')?.remove();
+};
+
+$('resetBtn').onclick = () => {
+  if (!confirm('Reset everything? This clears all inputs, images, and versions.')) return;
+  setInputs({ title: '', concept: '', character: '', lyrics: '' });
+  state.uploadedImages = [];
+  state.versions = [];
+  state.conversationHistory = [];
+  state.currentVersion = null;
+  state.hasGenerated = false;
+  renderThumbs();
+  $('refineBtn').disabled = true;
+  $('feedback').value = '';
+  const out = $('output');
+  out.innerHTML = `
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🎬</div>
+      <div class="empty-title">READY TO SHOOT</div>
+      <div class="empty-sub">Fill the brief, drop reference images, paste lyrics. Hit Generate.</div>
+    </div>
+  `;
+  toast('Reset complete', 'success');
+};
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    e.preventDefault();
+    if (!$('genBtn').disabled) generate();
+  } else if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
+    if (state.hasGenerated && !$('refineBtn').disabled) {
+      e.preventDefault();
+      refine();
+    }
+  } else if (e.key === 'Escape') {
+    $('imgPreview').classList.remove('show');
+    $('settingsModal')?.classList.remove('show');
+    document.querySelectorAll('.panel-detail').forEach(d => d.remove());
+    document.querySelectorAll('.sb-panel').forEach(p => p.classList.remove('active'));
+    state.activePanelIdx = -1;
+  }
+});
+
+// ============================================================================
+// SETTINGS MODAL UI (v2.2)
+// ============================================================================
+function renderPresets() {
+  const wrap = $('sx-presets');
+  wrap.innerHTML = '';
+  Object.entries(API_PRESETS).forEach(([id, p]) => {
+    const btn = document.createElement('button');
+    btn.className = 'sx-preset' + (apiConfig.preset === id ? ' active' : '');
+    btn.dataset.preset = id;
+    btn.innerHTML = `<span class="pname">${p.name}</span><span class="pmeta">${p.meta}</span>`;
+    btn.onclick = () => applyPreset(id);
+    wrap.appendChild(btn);
+  });
+}
+
+function applyPreset(id) {
+  const p = API_PRESETS[id];
+  if (!p) return;
+  apiConfig.preset = id;
+  apiConfig.format = p.format;
+  if (p.endpoint) apiConfig.endpoint = p.endpoint;
+  if (p.model) apiConfig.model = p.model;
+  if (p.skipImages !== undefined) apiConfig.skipImages = p.skipImages;
+  syncSettingsUI();
+  setSxStatus(p.note || '', 'info');
+  // Show CORS warning for cloud + remote backends
+  $('cors-warn').style.display = (p.endpoint && !p.endpoint.includes('localhost') && !p.endpoint.includes('127.0.0.1')) ? 'block' : 'none';
+}
+
+function syncSettingsUI() {
+  $('sx-endpoint').value = apiConfig.endpoint || '';
+  $('sx-key').value = apiConfig.key || '';
+  $('sx-model').value = apiConfig.model || '';
+  $('sx-maxtok').value = apiConfig.maxTokens || 6000;
+  $('sx-skip-images').checked = !!apiConfig.skipImages;
+  $('sx-fmt-openai').checked = apiConfig.format === 'openai';
+  $('sx-fmt-anthropic').checked = apiConfig.format === 'anthropic';
+  renderPresets();
+}
+
+function readSettingsUI() {
+  apiConfig.endpoint = $('sx-endpoint').value.trim();
+  apiConfig.key = $('sx-key').value.trim();
+  apiConfig.model = $('sx-model').value.trim();
+  apiConfig.maxTokens = parseInt($('sx-maxtok').value) || 6000;
+  apiConfig.skipImages = $('sx-skip-images').checked;
+  apiConfig.format = document.querySelector('input[name="sx-format"]:checked')?.value || 'openai';
+}
+
+function setSxStatus(msg, type='info') {
+  const el = $('sx-status');
+  el.textContent = msg || '';
+  el.className = 'sx-status ' + type;
+}
+
+function showSettings() {
+  syncSettingsUI();
+  $('settingsModal').classList.add('show');
+}
+
+function hideSettings() { $('settingsModal').classList.remove('show'); }
+
+async function testApiConnection() {
+  readSettingsUI();
+  if (!apiConfig.endpoint) { setSxStatus('Endpoint URL is required', 'err'); return; }
+  if (!apiConfig.key && apiConfig.preset !== 'broker') { setSxStatus('API key is required', 'err'); return; }
+  setSxStatus('Testing connection…', 'info');
+  try {
+    const tinyMsg = [{ role: 'user', content: 'Reply with just the word: OK' }];
+    let response, text;
+    if (apiConfig.format === 'anthropic') {
+      response = await fetch(apiConfig.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiConfig.key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: apiConfig.model, max_tokens: 20, messages: tinyMsg }),
+      });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message);
+      text = data.content?.[0]?.text || '(no content)';
+    } else {
+      response = await fetch(apiConfig.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiConfig.key}` },
+        body: JSON.stringify({ model: apiConfig.model, max_tokens: 20, messages: tinyMsg, temperature: 0 }),
+      });
+      if (!response.ok) {
+        let err = `HTTP ${response.status}`;
+        try { const eb = await response.json(); err = eb.error?.message || eb.message || JSON.stringify(eb); } catch {}
+        throw new Error(err);
+      }
+      const data = await response.json();
+      text = data.choices?.[0]?.message?.content || '(no content)';
+    }
+    setSxStatus(`✓ Connection works. Model said: "${text.slice(0,60)}"`, 'ok');
+  } catch (err) {
+    let hint = '';
+    if (/Failed to fetch|NetworkError|TypeError/i.test(err.message)) {
+      hint = ' — likely CORS or unreachable. Try serving via python -m http.server, or route via a CORS proxy you control.';
+    } else if (/401|403|invalid/i.test(err.message)) {
+      hint = ' — auth failed, check API key.';
+    } else if (/404|not found/i.test(err.message)) {
+      hint = ' — endpoint URL or model name wrong.';
+    }
+    setSxStatus(`✗ ${err.message}${hint}`, 'err');
+  }
+}
+
+function initSettings() {
+  loadApiConfig();
+  // First-run: open settings modal automatically
+  if (!apiConfig.endpoint || !apiConfig.key) {
+    applyPreset(apiConfig.preset || 'minimax');
+    setTimeout(showSettings, 300);
+  } else {
+    syncSettingsUI();
+  }
+
+  $('settingsBtn')?.addEventListener('click', showSettings);
+  $('sx-save').addEventListener('click', () => {
+    readSettingsUI();
+    saveApiConfig();
+    hideSettings();
+    showToast('✓ Settings saved');
+  });
+  $('sx-test').addEventListener('click', testApiConnection);
+  $('sx-key-show').addEventListener('click', () => {
+    const k = $('sx-key');
+    k.type = k.type === 'password' ? 'text' : 'password';
+  });
+  $('sx-fmt-openai').addEventListener('change', () => { apiConfig.format = 'openai'; });
+  $('sx-fmt-anthropic').addEventListener('change', () => { apiConfig.format = 'anthropic'; });
+  document.querySelectorAll('input[name="sx-format"]').forEach(r => {
+    r.addEventListener('change', e => apiConfig.format = e.target.value);
+  });
+  // Click outside modal to close
+  $('settingsModal').addEventListener('click', e => {
+    if (e.target === $('settingsModal')) hideSettings();
+  });
+}
+
+// ============================================================================
+// COMPOSITE PREVIEW (v2.4) — overlay engine + exports
+// ============================================================================
+
+const COMPOSITE = {
+  imageDataUrl: null,
+  imageEl: null,
+};
+
+function initComposite() {
+  const dz = $('cpDropzone');
+  const fileInput = $('cpFileInput');
+  if (!dz || !fileInput) return;
+
+  // Click anywhere in dropzone (when no image) opens file picker
+  dz.addEventListener('click', (e) => {
+    if (COMPOSITE.imageDataUrl) return;
+    fileInput.click();
+  });
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) loadCompositeImage(e.target.files[0]);
+  });
+
+  // Drag & drop
+  dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dz.classList.remove('dragover');
+    const file = e.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith('image/')) loadCompositeImage(file);
+  });
+
+  // Paste from clipboard
+  document.addEventListener('paste', (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) {
+          loadCompositeImage(file);
+          showToast('✓ Image pasted from clipboard', 'success');
+        }
+      }
+    }
+  });
+
+  $('cpClear')?.addEventListener('click', clearComposite);
+  $('cpExportPNG')?.addEventListener('click', exportCompositePNG);
+  $('cpExportHTML')?.addEventListener('click', exportCompositeHTML);
+  $('cpExportPDF')?.addEventListener('click', exportCompositePDF);
+
+  // v2.9 — Bake-in directives prompt
+  $('cpBakeIn')?.addEventListener('click', () => {
+    const prompt = generateDirectivesPrompt();
+    if (!prompt) return;
+    $('cpBakeinPrompt').value = prompt;
+    $('cpBakeinSection').style.display = 'block';
+    $('cpBakeinSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+  $('cpBakeinCopy')?.addEventListener('click', async () => {
+    const ta = $('cpBakeinPrompt');
+    if (!ta.value) return;
+    try {
+      await navigator.clipboard.writeText(ta.value);
+      showToast('✓ Prompt copied to clipboard', 'success');
+    } catch (err) {
+      ta.select();
+      document.execCommand('copy');
+      showToast('✓ Prompt copied (fallback)', 'success');
+    }
+  });
+  $('cpBakeinClose')?.addEventListener('click', () => {
+    $('cpBakeinSection').style.display = 'none';
+  });
+}
+
+function loadCompositeImage(file) {
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    COMPOSITE.imageDataUrl = ev.target.result;
+    const img = $('cpImage');
+    img.src = COMPOSITE.imageDataUrl;
+    $('cpEmpty').style.display = 'none';
+    $('cpCanvas').style.display = 'block';
+    $('cpActions').style.display = 'flex';
+    img.onload = () => renderComposite();
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearComposite() {
+  COMPOSITE.imageDataUrl = null;
+  $('cpImage').src = '';
+  $('cpOverlay').innerHTML = '';
+  $('cpCanvas').style.display = 'none';
+  $('cpActions').style.display = 'none';
+  $('cpEmpty').style.display = 'block';
+  $('cpFileInput').value = '';
+  // v2.9 — also hide bake-in section when image is cleared
+  const bs = $('cpBakeinSection');
+  if (bs) bs.style.display = 'none';
+  const bp = $('cpBakeinPrompt');
+  if (bp) bp.value = '';
+}
+
+function renderComposite() {
+  const overlay = $('cpOverlay');
+  if (!overlay || !COMPOSITE.imageDataUrl) return;
+  overlay.innerHTML = '';
+
+  const versionIdx = state.currentVersion;
+  if (versionIdx === null || versionIdx === undefined) return;
+  const version = state.versions[versionIdx];
+  if (!version) return;
+  const parsed = version.sections || version.parsed || version.data;
+  const panels = parsed?.storyboard?.panels || parsed?.panels;
+  if (!panels || !panels.length) return;
+
+  const layout = version.inputs?.layoutStyle || $('layoutStyle')?.value || 'comic_ink';
+  const panelCount = panels.length;
+
+  // Calculate grid
+  let rows, cols;
+  if (panelCount === 6) { rows = 2; cols = 3; }
+  else if (panelCount === 12) { rows = 3; cols = 4; }
+  else { rows = 3; cols = 3; }
+
+  // Editorial: header + footer banners around the canvas (rendered as part of overlay)
+  if (layout === 'lifestyle_editorial') {
+    const title = (version.inputs?.title || 'STORYBOARD').toUpperCase();
+    const banner = document.createElement('div');
+    banner.className = 'cp-banner cp-banner-top';
+    banner.innerHTML = `<span>STORYBOARD: ${escapeHtml(title)}</span><span>${escapeHtml(version.inputs?.tone || '')}</span>`;
+    banner.style.cssText = 'position:absolute; top:0; left:0; right:0; z-index:5;';
+    overlay.appendChild(banner);
+
+    const footer = document.createElement('div');
+    footer.className = 'cp-banner cp-banner-bot';
+    footer.innerHTML = `<span>BRAND: ${escapeHtml(version.inputs?.title || '—')}</span><span>FORMAT: ${escapeHtml(version.inputs?.aspect || '16:9')} · ${escapeHtml(String(version.inputs?.duration || ''))}s</span>`;
+    footer.style.cssText = 'position:absolute; bottom:0; left:0; right:0; z-index:5;';
+    overlay.appendChild(footer);
+  }
+
+  // Render per-panel labels
+  panels.forEach((panel, i) => {
+    const row = Math.floor(i / cols);
+    const col = i % cols;
+    const cellW = 100 / cols;
+    const cellH = 100 / rows;
+    const cell = document.createElement('div');
+    cell.className = 'cp-cell';
+    cell.style.cssText = `left:${col * cellW}%; top:${row * cellH}%; width:${cellW}%; height:${cellH}%;`;
+    cell.appendChild(buildLabel(panel, layout));
+    overlay.appendChild(cell);
+  });
+}
+
+function buildLabel(panel, layout) {
+  const num = String(panel.num).padStart(2, '0');
+  const action = (panel.action || '').slice(0, 90);
+  const lyric = panel.lyric && panel.lyric !== '—' ? panel.lyric : '';
+  const sceneTitle = (action.split(',')[0] || '').slice(0, 28).toUpperCase();
+
+  const wrap = document.createElement('div');
+
+  if (layout === 'photoreal_cinematic') {
+    wrap.className = 'cp-label-photoreal';
+    wrap.innerHTML = `<span class="pn">${num}</span>${escapeHtml(sceneTitle)}`;
+  } else if (layout === 'lifestyle_editorial') {
+    wrap.className = 'cp-label-editorial';
+    wrap.innerHTML = `
+      <span class="ed-num">${num}</span>
+      <div class="ed-row"><span class="ed-label">SCENE:</span> ${escapeHtml(sceneTitle)}</div>
+      <div class="ed-row"><span class="ed-label">ACTION:</span> ${escapeHtml(action)}</div>
+      ${lyric ? `<div class="ed-row"><span class="ed-label">VO:</span> "${escapeHtml(lyric.slice(0,60))}"</div>` : ''}
+    `;
+  } else {
+    wrap.className = 'cp-label-comic';
+    const txt = lyric || (panel.fx || '').split(',')[0] || sceneTitle;
+    wrap.innerHTML = `<span class="pn">${panel.num}</span>${escapeHtml(txt.slice(0, 50))}`;
+  }
+  return wrap;
+}
+
+// ============================================================================
+// EXPORTS — PNG / HTML / PDF
+// ============================================================================
+
+function safeFilename(base) {
+  return (base || 'storyboard').replace(/[^a-z0-9]+/gi, '_').toLowerCase().slice(0, 60);
+}
+
+async function exportCompositePNG() {
+  if (!COMPOSITE.imageDataUrl) return showToast('No image loaded', 'error');
+  if (typeof html2canvas === 'undefined') return showToast('html2canvas not loaded — when running from file:// the CDN fetch may have failed. Try serving via "python -m http.server" or reconnect to internet.', 'error');
+  showToast('📸 Rendering PNG...');
+  try {
+    const canvas = $('cpCanvas');
+    // Wait one frame for any pending layout/image-load
+    await new Promise(r => requestAnimationFrame(() => r()));
+    const result = await html2canvas(canvas, { useCORS: true, allowTaint: true, scale: 2, logging: true, backgroundColor: '#000' });
+    // v2.9 — use Blob + URL.createObjectURL instead of toDataURL (more reliable on file:// and avoids tainted-canvas SecurityError)
+    result.toBlob((blob) => {
+      if (!blob) {
+        console.error('PNG export: toBlob returned null — canvas likely tainted');
+        showToast('PNG export failed: canvas tainted (try serving via http.server instead of file://)', 'error');
+        return;
+      }
+      const link = document.createElement('a');
+      link.download = `${safeFilename(getInputs().title)}_composite_${Date.now()}.png`;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      showToast('✓ PNG saved', 'success');
+    }, 'image/png');
+  } catch (err) {
+    console.error('PNG export error (full):', err);
+    showToast('PNG export failed: ' + (err.message || err.name || 'unknown') + ' — see console for details', 'error');
+  }
+}
+
+function exportCompositeHTML() {
+  if (!COMPOSITE.imageDataUrl) return showToast('No image loaded', 'error');
+  const inputs = getInputs();
+  const title = inputs.title || 'Storyboard';
+  const overlay = $('cpOverlay').innerHTML;
+  const css = Array.from(document.styleSheets).filter(s => !s.href || s.href.startsWith('http')).map(s => {
+    try { return Array.from(s.cssRules).filter(r => r.cssText.includes('cp-')).map(r => r.cssText).join('\n'); }
+    catch { return ''; }
+  }).join('\n');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Storyboard: ${escapeHtml(title)}</title>
+<style>
+  body { margin:0; padding:24px; background:#0a0a0a; color:#ddd; font-family: -apple-system, system-ui, sans-serif; }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 { font-size:18px; letter-spacing:2px; text-transform:uppercase; color:#F5A623; margin-bottom:6px; }
+  .meta { font-size:11px; color:#888; margin-bottom:20px; font-family: monospace; }
+  .canvas { position:relative; width:100%; background:#000; border-radius:6px; overflow:hidden; }
+  .canvas img { display:block; width:100%; height:auto; }
+  .overlay { position:absolute; inset:0; pointer-events:none; }
+  .cp-cell { position:absolute; box-sizing:border-box; }
+  ${css}
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>${escapeHtml(title)}</h1>
+    <div class="meta">FORMAT: ${escapeHtml(inputs.aspect || '16:9')} · DURATION: ${escapeHtml(String(inputs.duration || ''))}s · TONE: ${escapeHtml(inputs.tone || '')} · STYLE: ${escapeHtml(inputs.vstyle || '')} · LAYOUT: ${escapeHtml(inputs.layoutStyle || '')}</div>
+    <div class="canvas">
+      <img src="${COMPOSITE.imageDataUrl}" alt="storyboard">
+      <div class="overlay">${overlay}</div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const link = document.createElement('a');
+  link.download = `${safeFilename(title)}_composite_${Date.now()}.html`;
+  link.href = URL.createObjectURL(blob);
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  showToast('✓ HTML saved', 'success');
+}
+
+async function exportCompositePDF() {
+  if (!COMPOSITE.imageDataUrl) return showToast('No image loaded', 'error');
+  if (typeof html2pdf === 'undefined') return showToast('html2pdf not loaded — when running from file:// the CDN fetch may have failed. Try serving via "python -m http.server" or reconnect to internet.', 'error');
+  showToast('📄 Rendering PDF...');
+  try {
+    const canvas = $('cpCanvas');
+    await new Promise(r => requestAnimationFrame(() => r()));
+    const opt = {
+      margin: 0.4,
+      filename: `${safeFilename(getInputs().title)}_composite_${Date.now()}.pdf`,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: true, backgroundColor: '#000' },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+    };
+    await html2pdf().set(opt).from(canvas).save();
+    showToast('✓ PDF saved', 'success');
+  } catch (err) {
+    console.error('PDF export error (full):', err);
+    showToast('PDF export failed: ' + (err.message || err.name || 'unknown') + ' — see console for details', 'error');
+  }
+}
+
+initComposite();
+initSettings();
+</script>
+</body>
+</html>
