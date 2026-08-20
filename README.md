@@ -27,11 +27,13 @@ It's tool-agnostic, BYOK (Bring Your Own Key), runs from a single HTML file with
 
 1. **Download** `index.html` from this repo.
 2. **Open** it in a recent Chrome / Edge / Firefox browser. *(If you see CORS errors when calling APIs from `file://`, see [Browser support](#browser-support) below.)*
-3. **The Settings modal will auto-open.** Choose your API endpoint:
+3. **A 3-step welcome screen opens.** It states the privacy model up front (your data stays in your browser, API keys are session-only) and either walks you through setup or lets you skip straight to **Settings**. From Settings, choose your API endpoint:
    - **Anthropic Direct** — recommended; stateless. Get a key from [console.anthropic.com](https://console.anthropic.com).
+   - **OpenAI Direct** — GPT-4o / GPT-5.x.
    - **OpenRouter** — multi-model gateway (Claude, GPT-4o, Gemini, more). Key from [openrouter.ai](https://openrouter.ai).
    - **MiniMax** — alternative cloud provider.
-   - **Custom** — for local LLMs, Together AI, fal.ai, custom proxies, etc.
+   - **Local LLM** — llama.cpp, Ollama, LM Studio, or any OpenAI-compatible endpoint.
+   - **Custom** — for Together AI, fal.ai, custom proxies, etc.
 4. **Paste your API key** and save.
 5. **Fill in:** project title, concept (one-line description of your video), characters (one per line), tone, duration, panel count, your image-gen tool, your video-gen tool.
 6. **Click GENERATE STORYBOARD.**
@@ -97,8 +99,8 @@ For production-quality (>90%) face matching:
 
 ## Privacy & security
 
-- **BYOK (Bring Your Own Key).** Your API key is held in browser memory during the session only. It is never sent anywhere except to the API endpoint you've explicitly configured.
-- **Blank canvas every launch.** Every page load wipes prior `localStorage` state — your previous brief, character data, and API key do not persist across sessions. Configure once per session.
+- **BYOK (Bring Your Own Key).** Your API key is session-only — held in browser memory while the tab is open and wiped when you close it. It is never sent anywhere except to the API endpoint you've explicitly configured. You'll re-enter it next session.
+- **Project autosave, opt-in restore.** Unlike API keys, your in-progress project (brief, characters, panel state) *does* autosave to `localStorage` as you work, so a refresh or crash doesn't lose your draft. Reference-image data is stripped from the autosave payload (descriptions are kept, the images themselves are not) to keep it small and to avoid quietly accumulating uploaded-image data across sessions. On reload, a banner offers **Restore** or **Discard** — it is never restored silently.
 - **No analytics, no tracking, no telemetry.** This is a static HTML file. It calls your chosen API and nothing else. No backend, no server, no third-party scripts beyond two well-known CDN libraries (html2canvas + html2pdf, both for export buttons).
 - **No memory-aware backends in defaults.** The app does not connect to LLM endpoints with persistent user-memory layers. Custom endpoint option lets you connect to whatever you want — but be aware that memory-aware backends can leak cross-session personal data into outputs.
 - **Anti-leak prompt defenses.** Character names are extracted from your brief client-side and passed to the model as exact literals; the system prompt forbids name substitution. This stops the model from hallucinating personal names from training-data context.
@@ -159,7 +161,8 @@ It also does not include:
 
 ## Versions
 
-- **v2.9.1** — current public release. Sanitized placeholders, public-grade defaults.
+- **v4.0** — current public release. New 3-step welcome flow, project autosave (opt-in restore, API keys still session-only), OpenAI Direct added as a cloud provider, expanded local-LLM support. Jumps the public track's own numbering to match the underlying build directly.
+- **v2.9.1** — previous public release. Sanitized placeholders, public-grade defaults.
 - **v2.9** — added Bake-in Directives feature for Step 3.
 - **v2.8** — public-grade pivot: blank-canvas init, anti-name-leak defenses, removal of LAN-only API presets.
 - **v2.7.1** — hotfix for v2.7 template-literal regression.
