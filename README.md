@@ -6,6 +6,16 @@ Turn a one-line concept into character sheets, a composite storyboard image, scr
 
 > Built as a planning layer between *"I have an idea"* and *"I have a video."*
 
+![Welcome screen](docs/screenshot-welcome.png)
+![9-panel storyboard output](docs/screenshot-storyboard-grid.png)
+
+<details>
+<summary>Full generated output (character sheet, storyboard prompt, IPA sync, per-panel video prompts, bake-in drop zone)</summary>
+
+![Full app output](docs/screenshot-full-output.png)
+
+</details>
+
 ---
 
 ## Read this first — it's a manual tool
