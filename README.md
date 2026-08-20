@@ -8,6 +8,21 @@ Turn a one-line concept into character sheets, a composite storyboard image, scr
 
 ---
 
+## Read this first — it's a manual tool
+
+Director's Board does **not** generate images or video itself. It writes the **prompts** — you paste each one into your own image generator (Midjourney, ChatGPT, Imagen, FLUX, whatever you already use) or your own video generator (Veo, Runway, Kling, whatever you already use), one step at a time, with you handling the files in between. It's a director's script supervisor, not an autopilot: it plans every shot, you run them.
+
+**The loop that makes the video step actually work — bringing the image back in:**
+
+1. Run the **Storyboard Composite** prompt in your image tool. You get back one clean N-panel photo grid — no text baked in yet, photography only.
+2. **Bring that image back into Director's Board** — drop it on the Composite Preview box (bottom of the app) — and click **Generate Bake-in Prompt**. This writes a *new* prompt whose job is to take your clean grid and burn the scene label, action line, and dialogue/VO text directly onto each panel.
+3. Paste that prompt **plus your storyboard image** into an image-edit-capable tool (ChatGPT GPT-4o is the one that reliably follows this kind of instruction). It generates *another* image — same 9 panels, now with every panel's story beat visible as baked-in text.
+4. Take that captioned image, together with the per-panel video prompts Director's Board already wrote, to your video tool. Because the reference image itself now carries the scene/action/dialogue as visible text, your video generator effectively reads a director's shot list instead of a bare photo grid — it has context for what's supposed to be happening in each panel, not just what it looks like.
+
+**Beyond video.** The pipeline above is one use of this tool, not the only one. **Character Sheets** on their own are useful any time you need a consistent, multi-angle reference sheet for an AI-generated character — game assets, illustration, concept art, tabletop material, anything. It's BYOK and provider-agnostic: point it at whatever LLM you already have access to — a paid API, a free-tier key, or a model you're running locally — and use it for whatever storyboarding or character-design task you actually have.
+
+---
+
 ## What it does
 
 Director's Board runs a multi-trip workflow. Each step produces a copy-paste-ready prompt tuned to your selected AI tool, with explicit instructions on how to attach reference photos and what tool-specific syntax to use.
@@ -16,7 +31,7 @@ Director's Board runs a multi-trip workflow. Each step produces a copy-paste-rea
 
 1. **Character Sheets** — One image-gen prompt per character (research-backed 4-view 2×2 grid format), with mandatory reference-photo upload instructions. Multi-character projects produce one prompt per character because mixed-grid sheets fail at the tool level.
 2. **Storyboard Composite** — A single prompt to assemble all character sheets into a clean N-panel storyboard image (no text, just the photography).
-3. **Bake-in Directives** — Drop the clean storyboard back into the app, click one button, get a tool-aware prompt that bakes scene labels, action descriptions, and voice-over text into each panel's caption block (Sol Vitals / NASCAR-campaign quality output).
+3. **Bake-in Directives** — Drop the clean storyboard image back into the app, click one button, get a tool-aware prompt that bakes scene labels, action descriptions, and voice-over text into each panel's caption block. Run that in an image-edit-capable tool and you get back a captioned "director's cut" of the storyboard — see [Read this first](#read-this-first--its-a-manual-tool) for why this step is what lets your video generator understand each shot, not just see it.
 4. **Per-Panel Video Clips** — N separate single-clip prompts with continuity instructions for image-to-video chaining (Wan 2.2, Runway, Kling, Luma, Veo 3, Sora, Hailuo, Pika).
 
 It's tool-agnostic, BYOK (Bring Your Own Key), runs from a single HTML file with no build step, and treats every page load as a true blank canvas — no persistent storage of your projects, briefs, or API keys.
